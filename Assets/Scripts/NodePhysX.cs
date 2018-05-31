@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class NodePhysX : Node {
 
     private Rigidbody thisRigidbody;
-
-    private float sphRadius;
+     private float sphRadius;
     private float sphRadiusSqr;
+
+    private readonly Color SelectedColor= new Color(255, 0, 0);
+
 
     protected override void doGravity()
     {
@@ -44,6 +47,7 @@ public class NodePhysX : Node {
     {
         base.Start();
         thisRigidbody = this.GetComponent<Rigidbody>();
+  
     }
 
     void Update()
@@ -51,5 +55,7 @@ public class NodePhysX : Node {
         // updating variable here, as opposed to doing it in Start(), otherwise we won't see runtime updates of forceSphereRadius
         sphRadius = graphControl.NodePhysXForceSphereRadius;
         sphRadiusSqr = sphRadius * sphRadius;
+        GetComponent<Renderer>().material.color = graphControl.IsSelected(this) ? SelectedColor : Color.white;
+
     }
 }

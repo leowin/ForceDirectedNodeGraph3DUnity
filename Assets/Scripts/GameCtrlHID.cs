@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts;
+using UnityEngine;
 
 public class GameCtrlHID : MonoBehaviour {
 
@@ -17,22 +18,22 @@ public class GameCtrlHID : MonoBehaviour {
     public paintedLink paintedLinkPrefab;
     private paintedLink paintedLinkObject;
 
-    public void paintNewLinkedNode(GameObject nodeClickedOn)
-    {
-        if (verbose)
-            Debug.Log(this.GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ": Entered. Node given: " + nodeClickedOn.name);
-
-        // Create a node on random Coordinates
-        GameObject nodeCreated = graphControl.GenerateNode();
-
-        if (nodeCreated != null)
-        {
-            graphControl.CreateLink(nodeClickedOn, nodeCreated);
-        }
-    }
+    
 
     public void PaintModeController()
     {
+        if (Input.GetKeyDown("backspace"))
+        {
+            graphControl.UndoAction();
+        }
+        if ( Input.GetKeyDown("delete"))
+        {
+            if( graphControl.SelectedNode!=null)
+            {
+                //delete node
+                graphControl.DoAction(new DeleteNode() { nodeId = graphControl.SelectedNode.name });
+            }
+        }
         // Paint only if not over Panel
         if (!gameCtrlUI.PanelIsPointeroverPanel(Input.mousePosition))
         {
@@ -100,48 +101,40 @@ public class GameCtrlHID : MonoBehaviour {
                     btnUpHitGo = null;
                     btnUpHitGo = gameCtrlHelper.ScreenPointToRaySingleHitWrapper(Camera.main, btnUpPointerPos);
 
-                    if (btnUpHitGo != null)
+                    string newNodeId = null;
+                    if(btnUpHitGo == null)
                     {
-                        //hitObjBtnUp = hitInfoBtnUp.collider.gameObject;
-
-                        if (verbose)
-                            Debug.Log(this.GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ": GetMouseButtonUp: Ray did hit. On Object: " + btnUpHitGo);
-                        
-                        // If on ButtonDown a node was rayhit, and on ButtonUp a different nodes, we just want to link these nodes together
-                        if (btnDownHitGo != null && (btnDownHitGo != btnUpHitGo))
-                        {
-                            if (verbose)
-                                Debug.Log(this.GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ": GetMouseButtonUp: ButtonDown node and a differing ButtonUp was selected. This linking the ButtonDown node: " + btnDownHitGo + " with the ButtonUp node: " + btnUpHitGo);
-
-                            graphControl.GenerateLink("specific_src_tgt", btnDownHitGo, btnUpHitGo);
-                        }
-                        // if on ButtonDown no node was rayhit, only on ButtonUp, we create new random node, which is connected to the node that was rayhit on ButtonUp
-                        else
-                        {
-                            if (verbose)
-                                Debug.Log(this.GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ": GetMouseButtonUp: No ButtonUp node found. Creating new random node connected to this ButtonUp node: " + btnUpHitGo);
-
-                            //paintNewLinkedNode(hitObjBtnUp);
-                            paintNewLinkedNode(btnUpHitGo);
-                        }
-
-                    }
-                    else
-                    {
+                        //create new node if release on empty space
                         float lazyZ = Camera.main.nearClipPlane + 28;
                         Vector3 clickPosWorld = Camera.main.ScreenToWorldPoint(new Vector3(btnUpPointerPos.x, btnUpPointerPos.y, lazyZ));
 
-                        if (verbose)
-                            Debug.Log(this.GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ": GetMouseButtonDown: Ray did not hit. Creating a node on position: x: " + clickPosWorld.x + "   y: " + clickPosWorld.y + "  z: " + lazyZ);
-
-                        // Create a node on specific Coordinates
-                        GameObject yetFreeNode = graphControl.GenerateNode(clickPosWorld);
-                        if (paintedLinkObject != null)
-                        {
-                            //graphControl.GenerateLink("specific_src_tgt", hitObjBtnDown, yetFreeNode);
-                            graphControl.GenerateLink("specific_src_tgt", btnDownHitGo, yetFreeNode);
-                        }
+                        newNodeId = "node_" + graphControl.NextId;
+                        graphControl.DoAction(new CreateNode() { nodeId = newNodeId, x = clickPosWorld.x, y = clickPosWorld.y, z = clickPosWorld.z });
+                        btnUpHitGo = GameObject.Find(newNodeId);
+                        graphControl.SelectById(newNodeId);
                     }
+
+                    if (btnUpHitGo != null)
+                    {
+                       // If on ButtonDown a node was rayhit, and on ButtonUp a different nodes, we just want to link these nodes together
+                        if (btnDownHitGo != null )
+                         {
+                            if (btnDownHitGo != btnUpHitGo)
+                            {
+                                if (verbose)
+                                    Debug.Log(this.GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ": GetMouseButtonUp: ButtonDown node and a differing ButtonUp was selected. This linking the ButtonDown node: " + btnDownHitGo + " with the ButtonUp node: " + btnUpHitGo);
+
+                                graphControl.DoAction(new CreateLink() { SourceId = btnDownHitGo.name, TargetId = btnUpHitGo.name });
+
+                            }
+                            else
+                            {
+                                //select node
+                                graphControl.Select(btnUpHitGo.GetComponent(typeof(NodePhysX)) as NodePhysX);
+                            }
+                        }
+                   }
+                
 
                     if (paintedLinkObject != null)
                         GameObject.Destroy(paintedLinkObject.gameObject);
@@ -156,5 +149,6 @@ public class GameCtrlHID : MonoBehaviour {
         graphControl = GetComponent<GraphController>();
         gameCtrlUI = GetComponent<GameCtrlUI>();
         gameCtrlHelper = GetComponent<GameCtrlHelper>();
+
     }
 }

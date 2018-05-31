@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
+using Assets.Scripts;
+using UnityEditor;
+using Crosstales.FB;
 //using BulletUnity;
 
 public class GraphController : MonoBehaviour {
@@ -11,11 +15,12 @@ public class GraphController : MonoBehaviour {
     private static GameController gameControl;
     private static GameCtrlUI gameCtrlUI;
     private static GameCtrlHelper gameCtrlHelper;
-
+    private Timeline timeline = new Timeline();
+    
     [SerializeField]
     private bool allStatic = false;
     [SerializeField]
-    private bool paintMode = false;
+    private bool paintMode = true;
     [SerializeField]
     private bool repulseActive = true;
     [SerializeField]
@@ -30,12 +35,74 @@ public class GraphController : MonoBehaviour {
     [SerializeField]
     private float nodeVectorGenRange = 7F;
 
+    private int _nextId;
+    public Int32 NextId { get { return ++_nextId; } internal set { _nextId = value; } }
+
+    public Node SelectedNode
+    {
+        get { return selected; }
+    }
+
+    internal void SelectById(String id)
+    {
+        var gO = GameObject.Find(id);
+        if (gO != null)
+        {
+            Select((NodePhysX)gO.GetComponent(typeof(NodePhysX)));
+        }
+        else
+            Select(null);
+    }
+    internal void Select(Node node)
+    {
+        selected = node;
+        gameCtrlUI.SelectedNodeChanged(node);
+    }
+
     [SerializeField]
     private float globalGravityBullet = 0.1f;
     [SerializeField]
     private float globalGravityPhysX = 10f;
     [SerializeField]
     private float repulseForceStrength = 0.1f;
+
+    private Node selected;
+
+    internal void RemoveNode(string id)
+    {
+        var gameObject = GameObject.Find(id);
+        if (SelectedNode != null && SelectedNode.gameObject == gameObject)
+            Select(null);
+        foreach (GameObject destroyTarget in GameObject.FindGameObjectsWithTag("link"))
+        {
+            var link = destroyTarget.GetComponent<Link>();
+            if (link.target == gameObject || link.source == gameObject)
+            {
+                Destroy(destroyTarget);
+                LinkCount -= 1;
+                gameCtrlUI.PanelStatusLinkCountTxt.text = "Linkcount: " + LinkCount;
+            }
+        }
+        Destroy(gameObject);
+        NodeCount -= 1;
+        gameCtrlUI.PanelStatusNodeCountTxt.text = "Nodecount: " + NodeCount;
+       
+
+        foreach (GameObject destroyTarget in GameObject.FindGameObjectsWithTag("debug"))
+        {
+            if (destroyTarget == gameObject.transform.Find("debugRepulseObj").gameObject)
+            {
+                Destroy(destroyTarget);
+            }
+        }
+    }
+
+    internal bool IsSelected(Node node)
+    {
+        return node == selected;
+    }
+
+
     [SerializeField]
     private float nodePhysXForceSphereRadius = 50F;                         // only works in PhysX; in BulletUnity CollisionObjects are used, which would need removing and readding to the world. Todo: Could implement it somewhen.
     [SerializeField]
@@ -46,6 +113,7 @@ public class GraphController : MonoBehaviour {
     private static int nodeCount;
     private static int linkCount;
     private List<GameObject> debugObjects = new List<GameObject>();
+
 
     public bool AllStatic
     {
@@ -194,7 +262,7 @@ public class GraphController : MonoBehaviour {
             linkCount = value;
         }
     }
-
+    
     void DebugAllNodes()
     {
         if (DebugRepulse)
@@ -254,82 +322,19 @@ public class GraphController : MonoBehaviour {
         }
     }
 
-    public GameObject GenerateNode()
-    {
-        // Method for creating a Node on random coordinates, e.g. when spawning multiple new nodes
+  
 
-        GameObject nodeCreated = null;
-
-        Vector3 createPos = new Vector3(UnityEngine.Random.Range(0, nodeVectorGenRange), UnityEngine.Random.Range(0, nodeVectorGenRange), UnityEngine.Random.Range(0, nodeVectorGenRange));
-
-        nodeCreated = InstObj(createPos);
-
-        if (nodeCreated != null)
-        {
-            nodeCreated.name = "node_" + nodeCount;
-            nodeCount++;
-            gameCtrlUI.PanelStatusNodeCountTxt.text = "Nodecount: " + NodeCount;
-
-            GameObject debugObj = nodeCreated.transform.FindChild("debugRepulseObj").gameObject;
-            debugObjects.Add(debugObj);
-            debugObj.SetActive(false);
-
-            if (verbose)
-                Debug.Log(this.GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ": Node created: " + nodeCreated.gameObject.name);
-
-        } else
-        {
-            if (verbose)
-                Debug.Log(this.GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ": Something went wrong, did not get a Node Object returned.");
-        }
-
-        return nodeCreated.gameObject;
-    }
-
-    public GameObject GenerateNode(Vector3 createPos)
-    {
-        // Method for creating a Node on specific coordinates, e.g. in Paintmode when a node is created at the end of a paintedLink
-
-        GameObject nodeCreated = null;
-
-        //nodeCreated = Instantiate(nodePrefabBullet, createPos, Quaternion.identity) as Node;
-        nodeCreated = InstObj(createPos);
-
-        if (nodeCreated != null)
-        {
-            nodeCreated.name = "node_" + nodeCount;
-            nodeCount++;
-            gameCtrlUI.PanelStatusNodeCountTxt.text = "Nodecount: " + NodeCount;
-
-            GameObject debugObj = nodeCreated.transform.FindChild("debugRepulseObj").gameObject;
-            debugObjects.Add(debugObj);
-            debugObj.SetActive(false);
-
-            if (verbose)
-                Debug.Log(this.GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ": Node created: " + nodeCreated.gameObject.name);
-        }
-        else
-        {
-            if (verbose)
-                Debug.Log(this.GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ": Something went wrong, did not get a Node Object returned.");
-        }
-
-        return nodeCreated.gameObject;
-    }
-
-    public GameObject GenerateNode(string name, string id, string type)
+    public GameObject GenerateNode(string name, string id, string type, Vector3 createPos)
     {
         // Method for creating a Node on random coordinates, but with defined labels. E.g. when loaded from a file which contains these label.
 
         GameObject nodeCreated = null;
 
-        Vector3 createPos = new Vector3(UnityEngine.Random.Range(0, nodeVectorGenRange), UnityEngine.Random.Range(0, nodeVectorGenRange), UnityEngine.Random.Range(0, nodeVectorGenRange));
-
+  
         //nodeCreated = Instantiate(nodePrefabBullet, createPos, Quaternion.identity) as Node;
         nodeCreated = InstObj(createPos);
 
-        if (nodeCreated != null)
-        {
+        if (nodeCreated != null){
             Node nodeNode = nodeCreated.GetComponent<Node>();
             nodeNode.name = id;
             nodeNode.Text = name;
@@ -338,7 +343,7 @@ public class GraphController : MonoBehaviour {
             nodeCount++;
             gameCtrlUI.PanelStatusNodeCountTxt.text = "Nodecount: " + NodeCount;
 
-            GameObject debugObj = nodeCreated.transform.FindChild("debugRepulseObj").gameObject;
+            GameObject debugObj = nodeCreated.transform.Find("debugRepulseObj").gameObject;
             debugObjects.Add(debugObj);
             debugObj.SetActive(false);
 
@@ -354,7 +359,17 @@ public class GraphController : MonoBehaviour {
         return nodeCreated.gameObject;
     }
 
-    public bool CreateLink(GameObject source, GameObject target)
+    public bool RemoveLink(string id)
+    {
+        var link = GameObject.Find(id);
+        if (link != null)
+        {
+            Destroy(link);
+            return true;
+        }
+        return false;
+    }
+    public bool CreateLink(string id, GameObject source, GameObject target)
     {
         if (source == null || target == null)
         {
@@ -382,7 +397,7 @@ public class GraphController : MonoBehaviour {
                 if (!alreadyExists)
                 {
                     Link linkObject = Instantiate(linkPrefab, new Vector3(0, 0, 0), Quaternion.identity) as Link;
-                    linkObject.name = "link_" + linkCount;
+                    linkObject.name = id;
                     linkObject.source = source;
                     linkObject.target = target;
                     linkCount++;
@@ -410,63 +425,20 @@ public class GraphController : MonoBehaviour {
         }
     }
 
-    public void GenerateLink(string mode)
-    {
-        if (mode == "random")
-        {
-            bool success = false;
-            int tryCounter = 0;
-            int tryLimit = nodeCount * 5;
+   
 
-            while (!success && tryCounter < tryLimit)
-            {
-                tryCounter++;
-
-                int sourceRnd = UnityEngine.Random.Range(0, nodeCount);
-                int targetRnd = UnityEngine.Random.Range(0, nodeCount);
-
-                GameObject source = GameObject.Find("node_" + sourceRnd);
-                GameObject target = GameObject.Find("node_" + targetRnd);
-
-                success = CreateLink(source, target);
-            }
-            if (!success)
-                if (verbose)
-                    Debug.Log(this.GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ": Too many unsuccessful tries, limit reached. Bailing out of GenerateLink run with mode=random. TryCounter: " + tryCounter + " Limit: " + nodeCount * 5);
-        }
-    }
-
-    public void GenerateLink(string mode, GameObject source, GameObject target)
-    {
-        if (mode == "specific_src_tgt")
-        {
-            bool success = false;
-
-            success = CreateLink(source, target);
-
-            if (!success)
-                if (verbose)
-                    Debug.Log(this.GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ": Problem with creating link. Link not created.");
-        }
-    }
 
     public void GenNodes(int count)
     {
         for (int i = 0; i < count; i++)
         {
             // Create a node on random Coordinates
-            GenerateNode();
+            Vector3 createPos = new Vector3(UnityEngine.Random.Range(0, nodeVectorGenRange), UnityEngine.Random.Range(0, nodeVectorGenRange), UnityEngine.Random.Range(0, nodeVectorGenRange));
+            GenerateNode("", "node_" + NextId, "", createPos);
         }
     }
 
-    public void GenLinks(int count)
-    {
-        for (int i = 0; i < count; i++)
-        {
-            // Create a link on random Coordinates
-            GenerateLink("random");
-        }
-    }
+    
 
     void Start()
     {
@@ -500,7 +472,124 @@ public class GraphController : MonoBehaviour {
             LinkIntendedLinkLength = 3f;
         }
     }
+    public void ReplayActions( int position)
+    {
+        ResetWorld();
+        timeline.currentPosition = 0;
+        for (int p = 0; p < position; p++)
+        {
+            PerformAction(timeline.actions[p], false);
+            timeline.currentPosition = p+1;
+        }
+    }
+    public string UndoAction(int? pos = null)
+    {
+        var position = pos.GetValueOrDefault(timeline.currentPosition-1);
+        if (timeline.actions.Count <= position)
+            return "Nothing to remove";
+        timeline.currentPosition = position;
 
+        var action = timeline.actions[position];
+        if (action is DeleteNode)
+        {
+            timeline.actions.RemoveAt(position);
+            //replay Whole Timeline
+            ReplayActions(position);
+            return "";
+        }
+        else
+        {
+            var ret = PerformAction(action, true);
+            if (string.IsNullOrEmpty(ret))
+            {
+                timeline.actions.RemoveAt(timeline.currentPosition);
+            }
+            return ret;
+        }
+
+        
+    }
+    public string DoAction(TimelineAction action)
+    {
+        var ret = PerformAction(action, false);
+        if (string.IsNullOrEmpty(ret))
+        {
+            timeline.actions.Insert(timeline.currentPosition, action);
+            timeline.currentPosition++;
+        }
+        return ret;
+    }
+    public string PerformAction(TimelineAction a, bool undo)
+    {
+        if( a is RenameAction )
+        {
+            var action = a as RenameAction;
+            var obj = GameObject.Find(action.nodeId);
+            if (obj != null)
+            {
+                (obj.GetComponent(typeof(NodePhysX)) as NodePhysX).Text = undo ? action.oldName : action.name;
+            }
+        }
+        else if( a is DeleteNode)
+        {
+            var action = a as DeleteNode;
+            if (!undo)
+            {
+                var obj = GameObject.Find(action.nodeId);
+                if (obj)
+                    RemoveNode(action.nodeId);
+            }
+            else throw new NotImplementedException();
+
+        }
+        else if( a is CreateNode)
+        {
+            var action = a as CreateNode;
+            if (string.IsNullOrEmpty(action.nodeId))
+                action.nodeId = "node_" + NextId;
+            if (!undo)
+            {
+                GenerateNode(action.name, action.nodeId, action.type, new Vector3((float)action.x, (float)action.y, (float)action.z));
+            }
+            else
+            {
+                RemoveNode(action.nodeId);
+            }
+        }
+        else if(a is CreateLink)
+        {
+            var action = a as CreateLink;
+            var sourceObj = GameObject.Find(action.SourceId);
+            var targetObj = GameObject.Find(action.TargetId);
+            if (string.IsNullOrEmpty(action.LinkId))
+                action.LinkId = "link_" + NextId;
+            if ( !undo)
+            {
+                if(sourceObj != null && targetObj != null)
+                {
+                    CreateLink(action.LinkId, sourceObj, targetObj);
+                }
+            }
+            else
+            {
+                RemoveLink(action.LinkId);
+            }
+            
+        }
+        return "";
+    }
+
+    public void Load()
+    {
+        string path = FileBrowser.OpenSingleFile("Open File", Application.dataPath + "/Data", "xml");
+        ResetWorld();
+        timeline = TimeLineIO.Load(path);
+    }
+    public void Save()
+    {
+        string path = FileBrowser.SaveFile("Save File", Application.dataPath + "/Data", "Model", "xml");
+        TimeLineIO.Save(timeline,path);
+    }
     void Update()
     {
         Link.intendedLinkLength = linkIntendedLinkLength;

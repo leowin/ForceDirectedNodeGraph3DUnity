@@ -121,12 +121,12 @@ public class GameCtrlInputReader : MonoBehaviour {
         foreach (nodeListObj genNode in nodesList)
         {
             // Create a node on random Coordinates, but with labels
-            graphControl.GenerateNode(genNode.name, genNode.id, genNode.type);
+            graphControl.GenerateNode(genNode.name, genNode.id, genNode.type, new Vector3(genNode.x, genNode.y, genNode.z));
         }
 
         foreach (linkListObj genLink in linksList)
         {
-            graphControl.GenerateLink("specific_src_tgt", GameObject.Find(genLink.source), GameObject.Find(genLink.target));
+            graphControl.CreateLink(genLink.id, GameObject.Find(genLink.source), GameObject.Find(genLink.target));
         }
 
         gameCtrlUI.PanelStatusText.text = "Graph done.";

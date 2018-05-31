@@ -64,6 +64,6 @@ public class NodeBullet : Node
     {
         base.Start();
         thisBRigidbody = this.GetComponent<BRigidBody>();
-        thisGhostObj = this.transform.FindChild("nodeRepulser").GetComponent<GhostObjPiggyBack2>();
+        thisGhostObj = this.transform.Find("nodeRepulser").GetComponent<GhostObjPiggyBack2>();
     }
 }

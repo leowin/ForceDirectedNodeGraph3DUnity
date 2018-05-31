@@ -2,6 +2,8 @@
 using UnityEngine.UI;
 using UnityEditor;
 using ProgressBar;
+using System;
+using UnityEngine.EventSystems;
 
 public class GameCtrlUI : MonoBehaviour {
 
@@ -11,6 +13,9 @@ public class GameCtrlUI : MonoBehaviour {
     private static GameController gameControl;
     private static GameCtrlInputReader gameCtrlInputReader;
     private static GraphController graphControl;
+    private static InputField nodename;
+    public GameObject leftPanel;
+    public GameObject leftPanelCollapsed;
 
     // All UI Elements here
     private RectTransform panelrecttrans;
@@ -49,6 +54,41 @@ public class GameCtrlUI : MonoBehaviour {
         }
     }
 
+    public void FontLarger()
+    {
+        labelFontSize = Math.Min(labelFontSize+2, 40);
+    }
+    public void FontSmaller()
+    {
+        labelFontSize = Math.Max(labelFontSize-2, 0);
+    }
+    internal void SelectedNodeChanged(Node node)
+    {
+        if (node != null)
+        {
+            if (!panelVisible)
+                ShowPanel(true);
+            nodename.text = node.Text;
+            nodename.enabled = true;
+            nodename.Select();
+         }
+        else
+        {
+            nodename.text = "";
+            if (panelVisible)
+                ShowPanel(false);
+        }
+
+    }
+    public bool panelVisible = false;
+
+    public void ShowPanel(bool show)
+    {
+        panelVisible = show;
+        leftPanelCollapsed.SetActive(!show);
+        leftPanel.gameObject.SetActive(show);
+
+    }
     internal Text PanelStatusLinkCountTxt
     {
         get
@@ -60,6 +100,9 @@ public class GameCtrlUI : MonoBehaviour {
             linkCountTxt = value;
         }
     }
+
+    [SerializeField]
+    public Int32 labelFontSize = 20;
 
     public void TogglePaintMode(Toggle tgl)
     {
@@ -127,8 +170,11 @@ public class GameCtrlUI : MonoBehaviour {
 
     internal bool PanelIsPointeroverPanel(Vector3 pointerCoords)
     {
-        if (pointerCoords.x < panelrecttrans.rect.xMax)
+        if (panelVisible &&  pointerCoords.x < panelrecttrans.rect.width)
+        {
+            Debug.Log(this.GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ": PointerOverPanel: " + pointerCoords.x);
             return true;
+        }
         else
             return false;
     }
@@ -160,5 +206,29 @@ public class GameCtrlUI : MonoBehaviour {
         progressBarObj = progressBar.gameObject;
         panelrecttrans = GameObject.Find("PanelLeft").GetComponent<RectTransform>();
         progressBarObj.SetActive(false);
+
+        nodename = GameObject.Find("Input_Text").GetComponent<InputField>();
+        nodename.onValueChanged.AddListener((s) => NodeTextChanged(s));
+        ShowPanel(panelVisible);
+    }
+
+    public void NodeTextChanged(string text)
+    {
+        var selected = graphControl.SelectedNode;
+        if (selected != null)
+        {
+            graphControl.SelectedNode.Text =  text;
+        }
+    }
+
+    public void OnGUI()
+    {
+        nodename.enabled = graphControl.SelectedNode != null;
+
+    }
+    
+    public void OverCollapsed()
+    {
+        
     }
 }
