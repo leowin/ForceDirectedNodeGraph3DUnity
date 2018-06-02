@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using Assets.Scripts;
-using UnityEditor;
 using Crosstales.FB;
+using System.Linq;
 //using BulletUnity;
 
 public class GraphController : MonoBehaviour {
@@ -42,6 +42,8 @@ public class GraphController : MonoBehaviour {
     {
         get { return selected; }
     }
+
+
 
     internal void SelectById(String id)
     {
@@ -472,19 +474,35 @@ public class GraphController : MonoBehaviour {
             LinkIntendedLinkLength = 3f;
         }
     }
-    public void ReplayActions( int position)
+    public void ReplayActions(int position)
     {
-        ResetWorld();
-        timeline.currentPosition = 0;
-        for (int p = 0; p < position; p++)
+        if (position < timeline.currentPosition)
+        {
+            ResetWorld();
+            timeline.currentPosition = 0;
+        }
+        for (int p = timeline.currentPosition; p < position; p++)
         {
             PerformAction(timeline.actions[p], false);
             timeline.currentPosition = p+1;
         }
     }
+  
+    public int GetPosition()
+    {
+        return timeline.currentPosition;
+    }
+    public int GetTimelineCount()
+    {
+        return timeline.actions.Count;
+    }
+    public void SetPosition(int position)
+    {
+        ReplayActions(position);
+    }
     public string UndoAction(int? pos = null)
     {
-        var position = pos.GetValueOrDefault(timeline.currentPosition-1);
+        var position = pos.GetValueOrDefault(timeline.currentPosition - 1);
         if (timeline.actions.Count <= position)
             return "Nothing to remove";
         timeline.currentPosition = position;
@@ -507,13 +525,22 @@ public class GraphController : MonoBehaviour {
             return ret;
         }
 
-        
+
     }
     public string DoAction(TimelineAction action)
     {
         var ret = PerformAction(action, false);
         if (string.IsNullOrEmpty(ret))
         {
+            //combine rename actions
+            if (action is RenameAction && timeline.currentPosition>0 && timeline.actions[timeline.currentPosition-1] is RenameAction)
+            {
+                if( (action as RenameAction).nodeId ==( timeline.actions[timeline.currentPosition - 1] as RenameAction).nodeId)
+                {
+                    (timeline.actions[timeline.currentPosition - 1] as RenameAction).name = (action as RenameAction).name;
+                    return ret;
+                }
+            }
             timeline.actions.Insert(timeline.currentPosition, action);
             timeline.currentPosition++;
         }
@@ -578,12 +605,26 @@ public class GraphController : MonoBehaviour {
         }
         return "";
     }
-
+    internal void DoDuplicateNode(string id, Vector3 position)
+    {
+        var old = GameObject.Find(id);
+        var oldNode = (old.GetComponent(typeof(NodePhysX)) as NodePhysX);
+        var links = GameObject.FindGameObjectsWithTag("link").Select(p => p.GetComponent<Link>());
+        links = links.Where(p => p.source == old || p.target == old).ToArray();
+        var createAction = new CreateNode() { name = oldNode.Text, x = position.x, y = position.y, z = position.z };
+        DoAction(createAction);
+        foreach(var l in links)
+        {
+            DoAction(new CreateLink() { SourceId = l.target == old ? l.source.name : createAction.nodeId, TargetId = l.target == old ? createAction.nodeId  : l.source.name });
+        }
+        DoAction(new CreateLink() { SourceId = old.name, TargetId = createAction.nodeId });
+    }
     public void Load()
     {
         string path = FileBrowser.OpenSingleFile("Open File", Application.dataPath + "/Data", "xml");
         ResetWorld();
         timeline = TimeLineIO.Load(path);
+        ReplayActions(timeline.currentPosition);
     }
     public void Save()
     {

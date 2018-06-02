@@ -20,7 +20,7 @@ public class paintedLink : MonoBehaviour
         //draw line
         lineRenderer.material = new Material(Shader.Find("Self-Illumin/Diffuse"));
         lineRenderer.material.SetColor("_Color", c);
-        lineRenderer.SetWidth(0.2f, 0.2f);
+        lineRenderer.SetWidth(0.1f, 0.1f);
         lineRenderer.SetVertexCount(2);
         lineRenderer.SetPosition(0, sourceObj.transform.position);
         lineRenderer.SetPosition(1, targetVector);

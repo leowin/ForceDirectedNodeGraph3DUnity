@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using UnityEditor;
 using ProgressBar;
 using System;
-using UnityEngine.EventSystems;
+using Assets.Scripts;
 
 public class GameCtrlUI : MonoBehaviour {
 
@@ -16,9 +15,11 @@ public class GameCtrlUI : MonoBehaviour {
     private static InputField nodename;
     public GameObject leftPanel;
     public GameObject leftPanelCollapsed;
+    public Slider slider;
 
     // All UI Elements here
     private RectTransform panelrecttrans;
+    private RectTransform tlPaneltrans;
     [SerializeField]
     private Text statusText;
     [SerializeField]
@@ -170,7 +171,13 @@ public class GameCtrlUI : MonoBehaviour {
 
     internal bool PanelIsPointeroverPanel(Vector3 pointerCoords)
     {
-        if (panelVisible &&  pointerCoords.x < panelrecttrans.rect.width)
+        Vector3[] corners = new Vector3[4];
+        panelrecttrans.GetWorldCorners(corners);
+        Vector3[] cornersTlPanel = new Vector3[4];
+        tlPaneltrans.GetWorldCorners(cornersTlPanel);
+        Rect plRect = new Rect(corners[0], corners[2] - corners[0]);
+        Rect tlRect = new Rect(cornersTlPanel[0], cornersTlPanel[2] - cornersTlPanel[0]);
+        if ((panelVisible && plRect.Contains(pointerCoords)) || tlRect.Contains(pointerCoords))
         {
             Debug.Log(this.GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ": PointerOverPanel: " + pointerCoords.x);
             return true;
@@ -189,11 +196,7 @@ public class GameCtrlUI : MonoBehaviour {
         progressBar.Value = progressValue;
     }
 
-    internal string OpenFileDialogGetFile()
-    {
-        string file = EditorUtility.OpenFilePanel("Open Input File", Application.dataPath + "/Data", "");
-        return file;
-    }
+  
 
     // Use this for initialization
     void Start()
@@ -205,26 +208,30 @@ public class GameCtrlUI : MonoBehaviour {
         progressBar = FindObjectOfType<ProgressBarBehaviour>();
         progressBarObj = progressBar.gameObject;
         panelrecttrans = GameObject.Find("PanelLeft").GetComponent<RectTransform>();
+        tlPaneltrans = GameObject.Find("TimelinePanel").GetComponent<RectTransform>();
         progressBarObj.SetActive(false);
 
         nodename = GameObject.Find("Input_Text").GetComponent<InputField>();
         nodename.onValueChanged.AddListener((s) => NodeTextChanged(s));
         ShowPanel(panelVisible);
+        slider.onValueChanged.AddListener((pos) => graphControl.SetPosition((int)pos));
     }
 
     public void NodeTextChanged(string text)
     {
         var selected = graphControl.SelectedNode;
-        if (selected != null)
+        if (selected != null && (!string.IsNullOrEmpty(text) || !string.IsNullOrEmpty(selected.Text)))
         {
-            graphControl.SelectedNode.Text =  text;
+            graphControl.DoAction(new RenameAction() { name = text, oldName = selected.Text, nodeId = selected.name });
         }
     }
 
     public void OnGUI()
     {
         nodename.enabled = graphControl.SelectedNode != null;
-
+        slider.minValue = 0;
+        slider.maxValue = graphControl.GetTimelineCount();
+        slider.value = graphControl.GetPosition();
     }
     
     public void OverCollapsed()

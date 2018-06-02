@@ -8,6 +8,8 @@ public class Link : MonoBehaviour
     public string id;
     public GameObject source;
     public GameObject target;
+    public Material linkMaterial;
+    public float lineWidth = 0.3f;
     public static float intendedLinkLength;
     public static float forceStrength;
 
@@ -65,9 +67,9 @@ public class Link : MonoBehaviour
         c.a = 0.5f;
 
         //draw line
-        lineRenderer.material = new Material(Shader.Find("Self-Illumin/Diffuse"));
+        lineRenderer.material = linkMaterial ?? new Material(Shader.Find("Self-Illumin/Diffuse"));
         lineRenderer.material.SetColor("_Color", c);
-        lineRenderer.SetWidth(0.3f, 0.3f);
+        lineRenderer.SetWidth(lineWidth, lineWidth);
         lineRenderer.SetVertexCount(2);
         lineRenderer.SetPosition(0, source.transform.position);
         lineRenderer.SetPosition(1, target.transform.position);

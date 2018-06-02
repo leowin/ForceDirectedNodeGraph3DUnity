@@ -22,16 +22,24 @@ public class GameCtrlHID : MonoBehaviour {
 
     public void PaintModeController()
     {
-        if (Input.GetKeyDown("backspace"))
+        if ((Input.GetKey(KeyCode.LeftControl)|| Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.Z))
         {
             graphControl.UndoAction();
         }
-        if ( Input.GetKeyDown("delete"))
+        if ( Input.GetKeyDown(KeyCode.F2))
         {
             if( graphControl.SelectedNode!=null)
             {
                 //delete node
                 graphControl.DoAction(new DeleteNode() { nodeId = graphControl.SelectedNode.name });
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            if (graphControl.SelectedNode != null)
+            {
+                var worldpos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane + 28));
+                graphControl.DoDuplicateNode(graphControl.SelectedNode.name, worldpos);
             }
         }
         // Paint only if not over Panel

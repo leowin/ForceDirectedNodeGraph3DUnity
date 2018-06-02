@@ -1,0 +1,2 @@
+delete key in input
+(all keys in input)

@@ -27,23 +27,26 @@ public class CameraControlZeroG : MonoBehaviour {
 	public float speed = 12f;
     public Text movementSpeed;
 
-    private Vector3 move = new Vector3();
+   
 
     void Update () {
-		move.x = Input.GetAxis("Horizontal") * speed * Time.deltaTime;
-		move.z = Input.GetAxis("Vertical") * speed * Time.deltaTime;
+        Vector3 move = new Vector3();
+        Vector3 rotate = new Vector3();
 
-		move.y = 0;
-		if (Input.GetKey ("space")) {
-			move.y = speed * Time.deltaTime;
-		}
+		if (Input.GetKey (KeyCode.LeftShift)) {
+            move.x = Input.GetAxis("Horizontal") * speed * Time.deltaTime;
+            move.y = Input.GetAxis("Vertical") * speed * Time.deltaTime;
+        }
+        else
+        {
+            rotate.y = Input.GetAxis("Horizontal") * speed * Time.deltaTime;
+            rotate.x = Input.GetAxis("Vertical") * speed * Time.deltaTime;
+        }
 
-		if (Input.GetKey ("left ctrl")) {
-			move.y = -speed * Time.deltaTime;
-		}
 
-		//adjust speed with mouse wheel
-		speed += Input.GetAxis("Mouse ScrollWheel") * 15;
+
+        //adjust speed with mouse wheel
+        move.z += Input.GetAxis("Mouse ScrollWheel") * 15;
 		if (speed < 5)
 			speed = 5;
 
@@ -51,5 +54,6 @@ public class CameraControlZeroG : MonoBehaviour {
 
 		move = transform.TransformDirection(move);
 		transform.position += move;
+        transform.Rotate(rotate);
 	}
 }
