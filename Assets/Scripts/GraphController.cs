@@ -38,6 +38,14 @@ public class GraphController : MonoBehaviour {
     private int _nextId;
     public Int32 NextId { get { return ++_nextId; } internal set { _nextId = value; } }
 
+    public event OnCameraMoved MoveCamera;
+    public event OnPlayerStopped PlayerStop;
+    public event OnPlayerPlaying PlayerPlaying;
+
+    public delegate void OnCameraMoved(object sender, Vector3 position, Vector3 rotation, float duration);
+    public delegate void OnPlayerPlaying(object sender, float framePosition, int frame, int frames);
+    public delegate void OnPlayerStopped(object sender, float framePosition, int frame, int frames);
+
     public Node SelectedNode
     {
         get { return selected; }
@@ -115,7 +123,9 @@ public class GraphController : MonoBehaviour {
     private static int nodeCount;
     private static int linkCount;
     private List<GameObject> debugObjects = new List<GameObject>();
-
+    private bool playerPlaying;
+    private float playTime = 0;
+    private float firstActionTime;
 
     public bool AllStatic
     {
@@ -253,6 +263,11 @@ public class GraphController : MonoBehaviour {
         }
     }
 
+    internal void Pause()
+    {
+        playerPlaying = false;
+    }
+
     public int LinkCount
     {
         get
@@ -361,6 +376,13 @@ public class GraphController : MonoBehaviour {
         return nodeCreated.gameObject;
     }
 
+    internal float GetTimelineTime()
+    {
+        if (timeline.actions.Count == 0)
+            return 0;
+        return timeline.actions.Last().time;
+    }
+
     public bool RemoveLink(string id)
     {
         var link = GameObject.Find(id);
@@ -451,6 +473,7 @@ public class GraphController : MonoBehaviour {
         nodeCount = 0;
         linkCount = 0;
         debugObjects.Clear();
+        firstActionTime = Time.time;
 
         foreach (GameObject debugObj in GameObject.FindGameObjectsWithTag("debug"))
         {
@@ -474,20 +497,24 @@ public class GraphController : MonoBehaviour {
             LinkIntendedLinkLength = 3f;
         }
     }
-    public void ReplayActions(int position)
+    public void ReplayToPosition(int position)
     {
         if (position < timeline.currentPosition)
         {
             ResetWorld();
             timeline.currentPosition = 0;
         }
-        for (int p = timeline.currentPosition; p < position; p++)
+        while( timeline.currentPosition < position)
         {
-            PerformAction(timeline.actions[p], false);
-            timeline.currentPosition = p+1;
+            PerformAction(timeline.actions[timeline.currentPosition], false);
+            timeline.currentPosition++;
         }
     }
   
+    public float GetTimePosition()
+    {
+        return playTime;
+    }
     public int GetPosition()
     {
         return timeline.currentPosition;
@@ -496,9 +523,26 @@ public class GraphController : MonoBehaviour {
     {
         return timeline.actions.Count;
     }
+    public void SetTimePosition(float time)
+    {
+        var newPos = timeline.actions.Count;
+        for (var pos = 0; pos < timeline.actions.Count; pos++)
+        {
+            if (timeline.actions[pos].time > time)
+            {
+                newPos = pos;
+                break;
+            }
+        }
+        if( newPos != timeline.currentPosition)
+        {
+            SetPosition(newPos);
+        }
+       
+    }
     public void SetPosition(int position)
     {
-        ReplayActions(position);
+        ReplayToPosition(position);
     }
     public string UndoAction(int? pos = null)
     {
@@ -512,7 +556,7 @@ public class GraphController : MonoBehaviour {
         {
             timeline.actions.RemoveAt(position);
             //replay Whole Timeline
-            ReplayActions(position);
+            ReplayToPosition(position);
             return "";
         }
         else
@@ -529,22 +573,73 @@ public class GraphController : MonoBehaviour {
     }
     public string DoAction(TimelineAction action)
     {
+        action.time = Time.time - firstActionTime;
         var ret = PerformAction(action, false);
         if (string.IsNullOrEmpty(ret))
         {
-            //combine rename actions
-            if (action is RenameAction && timeline.currentPosition>0 && timeline.actions[timeline.currentPosition-1] is RenameAction)
-            {
-                if( (action as RenameAction).nodeId ==( timeline.actions[timeline.currentPosition - 1] as RenameAction).nodeId)
-                {
-                    (timeline.actions[timeline.currentPosition - 1] as RenameAction).name = (action as RenameAction).name;
-                    return ret;
-                }
-            }
+            if (CombineTimeline(action, timeline.currentPosition))
+                return ret;
             timeline.actions.Insert(timeline.currentPosition, action);
             timeline.currentPosition++;
         }
         return ret;
+    }
+    public bool CombineTimeline(TimelineAction action, int position)
+    {
+        const float cameraCombineTime = 5.0f;
+
+        if (position == 0 || timeline.actions.Count < position)
+            return false;
+        var p = timeline.actions[position - 1];
+        if (timeline.actions[position-1].GetType() != action.GetType())
+            return false;
+
+        if (action is RenameAction)
+        {
+            //combine rename actions
+            var a = action as RenameAction;
+            var prev =  p as RenameAction;
+            if (a.nodeId == prev.nodeId)
+            {
+                prev.name =a.name;
+                return true;
+            }
+        }
+        if (action is MoveCamera && (action.time - p.time) < cameraCombineTime )
+        {
+            //combine rename actions
+            var a = action as MoveCamera;
+            var prev = p  as MoveCamera;
+            prev.newPos = a.newPos;
+            prev.newRot = a.newRot;
+            prev.duration = a.time - prev.time;
+            return true;
+        }
+        return false;
+
+    }
+
+    public void Play()
+    {
+        if (playerPlaying)
+            return;
+        if (timeline.currentPosition >= timeline.actions.Count)
+        {
+            Stop();
+            return;
+        }
+
+        var action = timeline.actions[timeline.currentPosition];
+        playTime = action.time;
+        playerPlaying = true;
+    }
+    public void Stop()
+    {
+        playerPlaying = false;
+        if (PlayerStop != null)
+        {
+            PlayerStop(this, playTime, timeline.currentPosition, timeline.actions.Count);
+        }
     }
     public string PerformAction(TimelineAction a, bool undo)
     {
@@ -576,11 +671,26 @@ public class GraphController : MonoBehaviour {
                 action.nodeId = "node_" + NextId;
             if (!undo)
             {
-                GenerateNode(action.name, action.nodeId, action.type, new Vector3((float)action.x, (float)action.y, (float)action.z));
+                GenerateNode(action.name, action.nodeId, action.type, action.position.ToVector3());
             }
             else
             {
                 RemoveNode(action.nodeId);
+            }
+        }
+        else if (a is MoveCamera)
+        {
+            var action = a as MoveCamera;
+
+            if (!undo)
+            {
+                if (MoveCamera != null)
+                    MoveCamera(this, action.newPos.ToVector3(), action.newRot.ToVector3(), action.duration);
+            }
+            else
+            {
+                if (MoveCamera != null)
+                    MoveCamera(this, action.oldPos.ToVector3(), action.oldPos.ToVector3(), action.duration);
             }
         }
         else if(a is CreateLink)
@@ -611,7 +721,7 @@ public class GraphController : MonoBehaviour {
         var oldNode = (old.GetComponent(typeof(NodePhysX)) as NodePhysX);
         var links = GameObject.FindGameObjectsWithTag("link").Select(p => p.GetComponent<Link>());
         links = links.Where(p => p.source == old || p.target == old).ToArray();
-        var createAction = new CreateNode() { name = oldNode.Text, x = position.x, y = position.y, z = position.z };
+        var createAction = new CreateNode() { name = oldNode.Text, position=SVector3.FromVector3(position)};
         DoAction(createAction);
         foreach(var l in links)
         {
@@ -624,7 +734,9 @@ public class GraphController : MonoBehaviour {
         string path = FileBrowser.OpenSingleFile("Open File", Application.dataPath + "/Data", "xml");
         ResetWorld();
         timeline = TimeLineIO.Load(path);
-        ReplayActions(timeline.currentPosition);
+        firstActionTime = Time.time;
+        SetPosition(0);
+        Stop();
     }
     public void Save()
     {
@@ -635,6 +747,30 @@ public class GraphController : MonoBehaviour {
     {
         Link.intendedLinkLength = linkIntendedLinkLength;
         Link.forceStrength = linkForceStrength;
+
+        if( playerPlaying)
+        {
+            //do next timeline actions
+            playTime += Time.deltaTime;
+            for( int index = timeline.currentPosition; index < timeline.actions.Count; index++)
+            {
+                var action = timeline.actions[index];
+                if (action.time < playTime)
+                {
+                    ReplayToPosition(index+1);
+                }
+                else
+                    break;
+            }
+            PlayerPlaying(this, playTime, timeline.currentPosition, timeline.actions.Count);
+
+            if (timeline.currentPosition>= timeline.actions.Count )
+            {
+                Stop();
+            }
+            
+
+        }
     }
 
 }

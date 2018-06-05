@@ -16,6 +16,7 @@ namespace Assets.Scripts
         [XmlArrayItem("delNode", typeof(DeleteNode))]
         [XmlArrayItem("link", typeof(CreateLink))]
         [XmlArrayItem("rename", typeof(RenameAction))]
+        [XmlArrayItem("camera", typeof(MoveCamera))]
         public List<TimelineAction> actions = new List<TimelineAction>();
 
         public int currentPosition = 0;
@@ -34,12 +35,8 @@ namespace Assets.Scripts
         public string name;
         [XmlAttribute]
         public string type;
-        [XmlAttribute]
-        public float x;
-        [XmlAttribute]
-        public float y;
-        [XmlAttribute]
-        public float z;
+
+        public SVector3 position;
     }
     public class CreateLink : TimelineAction
     {
@@ -60,11 +57,43 @@ namespace Assets.Scripts
         [XmlAttribute]
         public string oldName;
     }
+    public class SVector3
+    {
+        [XmlAttribute]
+        public float x;
+        [XmlAttribute]
+        public float y;
+        [XmlAttribute]
+        public float z;
+
+
+        public Vector3 ToVector3()
+        {
+            return new Vector3(x, y, z);
+        }
+        public static SVector3 FromVector3(Vector3 from)
+        {
+            return new SVector3() { x = from.x, y = from.y, z = from.z };
+        }
+
+    }
+    public class MoveCamera : TimelineAction
+    {
+        [XmlAttribute]
+        public float duration;
+
+        public SVector3 oldPos;
+        public SVector3 newPos;
+        public SVector3 oldRot;
+        public SVector3 newRot;
+    }
     public class TimelineAction
     {
         [XmlAttribute]
-        public long time;
+        public float time;
     }
+
+
 
     public class TimeLineIO
     {

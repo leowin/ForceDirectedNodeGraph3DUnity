@@ -41,18 +41,11 @@ public class GameCtrlInputReader : MonoBehaviour {
 
         //determine which platform to load for
         string xml = null;
-        if (Application.isWebPlayer)
-        {
-            WWW www = new WWW(sourceFile);
-            yield return www;
-            xml = www.text;
-        }
-        else
-        {
-            StreamReader sr = new StreamReader(sourceFile);
-            xml = sr.ReadToEnd();
-            sr.Close();
-        }
+      
+        StreamReader sr = new StreamReader(sourceFile);
+        xml = sr.ReadToEnd();
+        sr.Close();
+
 
         XmlDocument xmlDoc = new XmlDocument();
         xmlDoc.LoadXml(xml);

@@ -1,26 +1,55 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <Timeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <actions>
-    <node time="0" nodeId="node_1" x="-5.36505127" y="16.5860634" z="0.7208519" />
-    <node time="0" nodeId="node_2" x="-1.21927023" y="16.97021" z="0.9344311" />
-    <node time="0" nodeId="node_3" x="10.0681553" y="16.394" z="1.3497467" />
-    <node time="0" nodeId="node_4" x="10.1318541" y="12.7926807" z="0.9834881" />
-    <node time="0" nodeId="node_5" x="5.35207653" y="14.04114" z="0.910518646" />
-    <node time="0" nodeId="node_6" x="3.708475" y="14.9534721" z="0.9349098" />
-    <node time="0" nodeId="node_7" x="-6.296608" y="8.903217" z="-0.105361938" />
-    <node time="0" nodeId="node_8" x="6.48480463" y="8.567095" z="0.397333145" />
-    <node time="0" nodeId="node_9" x="-3.00482178" y="6.02212048" z="-0.262180328" />
-    <node time="0" nodeId="node_10" x="-6.63728333" y="9.62347" z="-0.0458927155" />
-    <node time="0" nodeId="node_11" x="2.908018" y="10.4397717" z="0.438867569" />
-    <node time="0" nodeId="node_12" x="2.77593422" y="7.51069355" z="0.133247375" />
-    <node time="0" nodeId="node_13" x="15.1424417" y="13.94511" z="1.31211472" />
-    <node time="0" nodeId="node_14" x="9.932748" y="14.2332039" z="1.122694" />
-    <node time="0" nodeId="node_15" x="1.1087966" y="13.8970575" z="0.7174339" />
-    <node time="0" nodeId="node_16" x="10.139267" y="11.064002" z="0.8067055" />
-    <node time="0" nodeId="node_17" x="9.920018" y="5.974101" z="0.2760582" />
-    <rename time="0" nodeId="node_5" name="Geräusch" />
-    <rename time="0" nodeId="node_16" name="Hören" />
-    <rename time="0" nodeId="node_17" name="Klatschen" />
+    <node time="3.22122741" nodeId="node_1">
+      <position x="-22.541563" y="-0.796435952" z="28.2999973" />
+    </node>
+    <node time="4.13795567" nodeId="node_2">
+      <position x="-8.0609" y="5.623323" z="28.2999973" />
+    </node>
+    <rename time="5.33042431" nodeId="node_2" name="asdfadsf" />
+    <node time="6.307857" nodeId="node_3">
+      <position x="4.10285568" y="2.87199855" z="28.2999973" />
+    </node>
+    <camera time="7.417942" duration="0.5465822">
+      <oldPos x="0" y="0" z="0" />
+      <newPos x="9.479509" y="0" z="0" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <node time="8.56104" nodeId="node_4">
+      <position x="22.849987" y="7.602347" z="28.2999973" />
+    </node>
+    <rename time="9.985952" nodeId="node_4" name="asdfadsfadsf" />
+    <camera time="14.2998238" duration="2.76698875">
+      <oldPos x="9.479509" y="0" z="0" />
+      <newPos x="37.41348" y="0" z="0" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <node time="17.48164" nodeId="node_5">
+      <position x="51.07359" y="6.926582" z="28.2999973" />
+    </node>
+    <rename time="18.6904869" nodeId="node_5" name="adsfadsf" />
+    <node time="20.08209" nodeId="node_6">
+      <position x="65.3128738" y="5.575053" z="28.2999973" />
+    </node>
+    <camera time="21.5237579" duration="4.98662">
+      <oldPos x="37.41348" y="0" z="0" />
+      <newPos x="37.41348" y="-17.1101" z="0" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <camera time="26.5266876" duration="0.7785816">
+      <oldPos x="37.41348" y="-17.1445942" z="0" />
+      <newPos x="37.41348" y="1.97480774" z="0" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <node time="30.4197578" nodeId="node_7">
+      <position x="66.27832" y="8.949654" z="28.2999973" />
+    </node>
+    <link time="33.4524841" SourceId="node_6" TargetId="node_7" LinkId="link_8" />
   </actions>
-  <currentPosition>20</currentPosition>
+  <currentPosition>15</currentPosition>
 </Timeline>

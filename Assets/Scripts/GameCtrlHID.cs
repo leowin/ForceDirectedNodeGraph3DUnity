@@ -117,7 +117,7 @@ public class GameCtrlHID : MonoBehaviour {
                         Vector3 clickPosWorld = Camera.main.ScreenToWorldPoint(new Vector3(btnUpPointerPos.x, btnUpPointerPos.y, lazyZ));
 
                         newNodeId = "node_" + graphControl.NextId;
-                        graphControl.DoAction(new CreateNode() { nodeId = newNodeId, x = clickPosWorld.x, y = clickPosWorld.y, z = clickPosWorld.z });
+                        graphControl.DoAction(new CreateNode() { nodeId = newNodeId, position = SVector3.FromVector3(clickPosWorld) });
                         btnUpHitGo = GameObject.Find(newNodeId);
                         graphControl.SelectById(newNodeId);
                     }

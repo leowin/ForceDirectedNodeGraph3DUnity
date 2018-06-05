@@ -13,9 +13,18 @@ public class GameCtrlUI : MonoBehaviour {
     private static GameCtrlInputReader gameCtrlInputReader;
     private static GraphController graphControl;
     private static InputField nodename;
+
+    private static GameObject btnPlay;
+    private static GameObject btnPause; 
+    private static GameObject btnStop;
+    private static GameObject btnRecord;
+    private static GameObject btnNext;
+    private static GameObject btnPrev;
+
     public GameObject leftPanel;
     public GameObject leftPanelCollapsed;
     public Slider slider;
+    public Text playerPosText;
 
     // All UI Elements here
     private RectTransform panelrecttrans;
@@ -195,9 +204,37 @@ public class GameCtrlUI : MonoBehaviour {
     {
         progressBar.Value = progressValue;
     }
-
-  
-
+    public void SetPlayState(bool play = false, bool record = false)
+    {
+        btnPlay.SetActive(!play && !record);
+        btnPause.SetActive(play || record);
+        btnRecord.SetActive(!record && !play);
+        btnStop.SetActive(play || record);
+    }
+    public void OnPlayerPlay()
+    {
+        graphControl.Play();
+    }
+    public void OnPlayerPause()
+    {
+        graphControl.Pause();
+    }
+    public void OnPlayerRecord()
+    {
+        SetPlayState(false, true);
+    }
+    public void OnPlayerStop()
+    {
+        graphControl.Stop();
+    }
+    public void OnPlayerNext()
+    {
+        SetPlayState();
+    }
+    public void OnPlayerPrev()
+    {
+        SetPlayState();
+    }
     // Use this for initialization
     void Start()
     {
@@ -214,7 +251,31 @@ public class GameCtrlUI : MonoBehaviour {
         nodename = GameObject.Find("Input_Text").GetComponent<InputField>();
         nodename.onValueChanged.AddListener((s) => NodeTextChanged(s));
         ShowPanel(panelVisible);
-        slider.onValueChanged.AddListener((pos) => graphControl.SetPosition((int)pos));
+        slider.onValueChanged.AddListener((pos) => graphControl.SetTimePosition(pos));
+
+        graphControl.PlayerPlaying += GraphControl_PlayerPlaying;
+        graphControl.PlayerStop += GraphControl_PlayerStop;
+        btnPlay = GameObject.Find("BtnPlay");
+        btnPause = GameObject.Find("BtnPause");
+        btnStop = GameObject.Find("BtnStop");
+        btnRecord = GameObject.Find("BtnRecord");
+        btnNext = GameObject.Find("BtnNext");
+        btnPrev = GameObject.Find("BtnPrev");
+
+        SetPlayState();
+
+    }
+
+    private void GraphControl_PlayerStop(object sender, float framePosition, int frame, int frames)
+    {
+        SetPlayState(false, false);
+        playerPosText.text = TimeSpan.FromSeconds(framePosition).ToString().Split('.')[0] + "(" + frame + "/" + frames + ")";
+    }
+
+    private void GraphControl_PlayerPlaying(object sender, float framePosition, int frame, int frames)
+    {
+        SetPlayState(true, false);
+        playerPosText.text = TimeSpan.FromSeconds(framePosition).ToString().Split('.')[0] + "(" +  frame + "/" + frames + ")";
     }
 
     public void NodeTextChanged(string text)
@@ -230,8 +291,8 @@ public class GameCtrlUI : MonoBehaviour {
     {
         nodename.enabled = graphControl.SelectedNode != null;
         slider.minValue = 0;
-        slider.maxValue = graphControl.GetTimelineCount();
-        slider.value = graphControl.GetPosition();
+        slider.maxValue = graphControl.GetTimelineTime();
+        slider.value = graphControl.GetTimePosition();
     }
     
     public void OverCollapsed()
