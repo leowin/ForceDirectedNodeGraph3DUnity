@@ -229,10 +229,12 @@ public class GameCtrlUI : MonoBehaviour {
     }
     public void OnPlayerNext()
     {
+        graphControl.SetPosition(Math.Min(graphControl.GetPosition() + 1, graphControl.GetTimelineCount()));
         SetPlayState();
     }
     public void OnPlayerPrev()
     {
+        graphControl.SetPosition(Math.Max(graphControl.GetPosition() - 1, 0));
         SetPlayState();
     }
     // Use this for initialization

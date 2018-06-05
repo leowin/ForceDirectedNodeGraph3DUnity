@@ -507,6 +507,7 @@ public class GraphController : MonoBehaviour {
         while( timeline.currentPosition < position)
         {
             PerformAction(timeline.actions[timeline.currentPosition], false);
+            playTime = timeline.actions[timeline.currentPosition].time;
             timeline.currentPosition++;
         }
     }
@@ -540,9 +541,21 @@ public class GraphController : MonoBehaviour {
         }
        
     }
+    public void EmitPosition()
+    {
+        if (playerPlaying)
+        {
+            if( PlayerPlaying != null) PlayerPlaying(this, playTime, timeline.currentPosition, timeline.actions.Count);
+        }
+        else
+        {
+            if (PlayerStop != null) PlayerStop(this, playTime, timeline.currentPosition, timeline.actions.Count);
+        }
+    }
     public void SetPosition(int position)
     {
         ReplayToPosition(position);
+        EmitPosition();
     }
     public string UndoAction(int? pos = null)
     {
@@ -636,10 +649,7 @@ public class GraphController : MonoBehaviour {
     public void Stop()
     {
         playerPlaying = false;
-        if (PlayerStop != null)
-        {
-            PlayerStop(this, playTime, timeline.currentPosition, timeline.actions.Count);
-        }
+        EmitPosition();
     }
     public string PerformAction(TimelineAction a, bool undo)
     {
@@ -762,7 +772,7 @@ public class GraphController : MonoBehaviour {
                 else
                     break;
             }
-            PlayerPlaying(this, playTime, timeline.currentPosition, timeline.actions.Count);
+            EmitPosition();
 
             if (timeline.currentPosition>= timeline.actions.Count )
             {
