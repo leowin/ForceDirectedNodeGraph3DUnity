@@ -72,21 +72,29 @@ public class GameCtrlUI : MonoBehaviour {
     {
         labelFontSize = Math.Max(labelFontSize-2, 0);
     }
-    internal void SelectedNodeChanged(Node node)
+    internal void SelectedNodeChanged(Node node, bool showProps)
     {
         if (node != null)
         {
-            if (!panelVisible)
-                ShowPanel(true);
+            var position = Camera.main.WorldToScreenPoint(node.transform.position);
+            position += new Vector3(0, labelFontSize*-2, position.z * -1);
+            nodename.transform.position = position;
             nodename.text = node.Text;
             nodename.enabled = true;
+            //nodename.gameObject.transform.localPosition = position;
+            if( showProps)
+                nodename.ActivateInputField();
+            else
+                nodename.DeactivateInputField();
             nodename.Select();
-         }
+            //nodename.gameObject.SetActive(showProps);
+        }
         else
         {
+            nodename.DeactivateInputField();
+            nodename.transform.position = new Vector3(-200, -200, -100); //invisible
+            //nodename.gameObject.SetActive(false);
             nodename.text = "";
-            if (panelVisible)
-                ShowPanel(false);
         }
 
     }
@@ -221,7 +229,15 @@ public class GameCtrlUI : MonoBehaviour {
     }
     public void OnPlayerRecord()
     {
-        SetPlayState(false, true);
+        graphControl.BeginRecord();
+    }
+    public void OnPlayerStart()
+    {
+        graphControl.SetPosition(0);
+    }
+    public void OnPlayerEnd()
+    {
+        graphControl.SetPosition(graphControl.GetTimelineCount());
     }
     public void OnPlayerStop()
     {
@@ -230,12 +246,10 @@ public class GameCtrlUI : MonoBehaviour {
     public void OnPlayerNext()
     {
         graphControl.SetPosition(Math.Min(graphControl.GetPosition() + 1, graphControl.GetTimelineCount()));
-        SetPlayState();
     }
     public void OnPlayerPrev()
     {
         graphControl.SetPosition(Math.Max(graphControl.GetPosition() - 1, 0));
-        SetPlayState();
     }
     // Use this for initialization
     void Start()
@@ -255,8 +269,7 @@ public class GameCtrlUI : MonoBehaviour {
         ShowPanel(panelVisible);
         slider.onValueChanged.AddListener((pos) => graphControl.SetTimePosition(pos));
 
-        graphControl.PlayerPlaying += GraphControl_PlayerPlaying;
-        graphControl.PlayerStop += GraphControl_PlayerStop;
+        graphControl.PlayerPosition += GraphControl_PlayerPosition;
         btnPlay = GameObject.Find("BtnPlay");
         btnPause = GameObject.Find("BtnPause");
         btnStop = GameObject.Find("BtnStop");
@@ -268,15 +281,10 @@ public class GameCtrlUI : MonoBehaviour {
 
     }
 
-    private void GraphControl_PlayerStop(object sender, float framePosition, int frame, int frames)
-    {
-        SetPlayState(false, false);
-        playerPosText.text = TimeSpan.FromSeconds(framePosition).ToString().Split('.')[0] + "(" + frame + "/" + frames + ")";
-    }
 
-    private void GraphControl_PlayerPlaying(object sender, float framePosition, int frame, int frames)
+    private void GraphControl_PlayerPosition(object sender, bool playing, bool recording, float framePosition, int frame, int frames)
     {
-        SetPlayState(true, false);
+        SetPlayState(playing, recording);
         playerPosText.text = TimeSpan.FromSeconds(framePosition).ToString().Split('.')[0] + "(" +  frame + "/" + frames + ")";
     }
 

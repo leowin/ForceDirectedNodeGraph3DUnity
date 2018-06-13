@@ -32,6 +32,7 @@ public class CameraControlZeroG : MonoBehaviour {
     public GraphController graphController;
     private float lastMove = 0;
     public AnimationCurve[] curves = new AnimationCurve[6];
+    public Text CoordControl = null;
 
     private void Start()
     {
@@ -41,34 +42,34 @@ public class CameraControlZeroG : MonoBehaviour {
 
     private void GraphController_MoveCamera(object sender, Vector3 position, Vector3 rotation, float duration)
     {
-        if (curves[0] != null)
-        {
-            curves[0] = AnimationCurve.EaseInOut(Time.time, transform.position.x, Time.time + duration, position.x);
-            curves[1] = AnimationCurve.EaseInOut(Time.time, transform.position.y, Time.time + duration, position.y);
-            curves[2] = AnimationCurve.EaseInOut(Time.time, transform.position.z, Time.time + duration, position.z);
-            curves[3] = AnimationCurve.EaseInOut(Time.time, transform.rotation.eulerAngles.x, Time.time + duration, rotation.x);
-            curves[4] = AnimationCurve.EaseInOut(Time.time, transform.rotation.eulerAngles.y, Time.time + duration, rotation.y);
-            curves[5] = AnimationCurve.EaseInOut(Time.time, transform.rotation.eulerAngles.z, Time.time + duration, rotation.z);
-        }
+        curves[0] = AnimationCurve.EaseInOut(Time.time, transform.position.x, Time.time + duration, position.x);
+        curves[1] = AnimationCurve.EaseInOut(Time.time, transform.position.y, Time.time + duration, position.y);
+        curves[2] = AnimationCurve.EaseInOut(Time.time, transform.position.z, Time.time + duration, position.z);
+        curves[3] = AnimationCurve.EaseInOut(Time.time, transform.rotation.eulerAngles.x, Time.time + duration, rotation.x);
+        curves[4] = AnimationCurve.EaseInOut(Time.time, transform.rotation.eulerAngles.y, Time.time + duration, rotation.y);
+        curves[5] = AnimationCurve.EaseInOut(Time.time, transform.rotation.eulerAngles.z, Time.time + duration, rotation.z);
      }
 
     void Update () {
         //animation
-        transform.position = new Vector3(curves[0].Evaluate(Time.time), curves[1].Evaluate(Time.time), curves[2].Evaluate(Time.time));
-        transform.rotation = Quaternion.Euler(new Vector3(curves[3].Evaluate(Time.time), curves[4].Evaluate(Time.time), curves[5].Evaluate(Time.time)));
-
+        if (curves[0] != null)
+        {
+            transform.position = new Vector3(curves[0].Evaluate(Time.time), curves[1].Evaluate(Time.time), curves[2].Evaluate(Time.time));
+            transform.rotation = Quaternion.Euler(new Vector3(curves[3].Evaluate(Time.time), curves[4].Evaluate(Time.time), curves[5].Evaluate(Time.time)));
+            CoordControl.text = "Pos: " + transform.position.ToString() + "\nRot: " + transform.rotation.eulerAngles.ToString();
+        }
         //input
         Vector3 move = new Vector3();
         Vector3 rotate = new Vector3();
 
 		if (Input.GetKey (KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) {
             rotate.y = Input.GetAxis("Horizontal") * speed * Time.deltaTime;
-            rotate.x = Input.GetAxis("Vertical") * speed * Time.deltaTime;
+            move.y = Input.GetAxis("Vertical") * speed * Time.deltaTime;
         }
         else
         {
             move.x = Input.GetAxis("Horizontal") * speed * Time.deltaTime;
-            move.y = Input.GetAxis("Vertical") * speed * Time.deltaTime;
+            move.z = Input.GetAxis("Vertical") * speed * Time.deltaTime;
         }
 
         //adjust speed with mouse wheel
@@ -79,21 +80,20 @@ public class CameraControlZeroG : MonoBehaviour {
 		movementSpeed.text = "Flyspeed: " + speed;
         move = transform.TransformDirection(move);
         var oldRot = transform.rotation.eulerAngles;
-        transform.Rotate(rotate);
-        var newRot = transform.rotation.eulerAngles;
-        transform.rotation = Quaternion.Euler(oldRot);
+        var newRot = (transform.rotation * Quaternion.Euler(rotate)).eulerAngles;
         if (oldRot.Equals(newRot) && move.Equals(Vector3.zero))
             return;
-        
+
+
+
         graphController.DoAction(new MoveCamera()
         {
             newPos = SVector3.FromVector3(transform.position + move),
             oldPos = SVector3.FromVector3(transform.position),
             newRot = SVector3.FromVector3(newRot),
             oldRot = SVector3.FromVector3(oldRot),
-            duration = Time.time - lastMove
+            duration = 0
         });
-        lastMove = Time.time;
 
 
 

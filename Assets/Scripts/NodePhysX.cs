@@ -5,12 +5,12 @@ using UnityEngine.UI;
 public class NodePhysX : Node {
 
     private Rigidbody thisRigidbody;
-     private float sphRadius;
+    private float sphRadius;
     private float sphRadiusSqr;
 
     private readonly Color SelectedColor= new Color(255, 0, 0);
 
-
+    
     protected override void doGravity()
     {
         // Apply global gravity pulling node towards center of universe

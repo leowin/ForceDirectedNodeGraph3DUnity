@@ -35,16 +35,14 @@ public class GraphController : MonoBehaviour {
     [SerializeField]
     private float nodeVectorGenRange = 7F;
 
-    private int _nextId;
-    public Int32 NextId { get { return ++_nextId; } internal set { _nextId = value; } }
+    public Int32 NextId { get { return timeline.NextId(); } }
 
     public event OnCameraMoved MoveCamera;
-    public event OnPlayerStopped PlayerStop;
-    public event OnPlayerPlaying PlayerPlaying;
+    public event OnPlayerPosition PlayerPosition;
 
     public delegate void OnCameraMoved(object sender, Vector3 position, Vector3 rotation, float duration);
-    public delegate void OnPlayerPlaying(object sender, float framePosition, int frame, int frames);
-    public delegate void OnPlayerStopped(object sender, float framePosition, int frame, int frames);
+    public delegate void OnPlayerPosition(object sender, bool playing, bool recording, float framePosition, int frame, int frames);
+
 
     public Node SelectedNode
     {
@@ -53,20 +51,20 @@ public class GraphController : MonoBehaviour {
 
 
 
-    internal void SelectById(String id)
+    internal void SelectById(String id, bool showProps = false)
     {
         var gO = GameObject.Find(id);
         if (gO != null)
         {
-            Select((NodePhysX)gO.GetComponent(typeof(NodePhysX)));
+            Select((NodePhysX)gO.GetComponent(typeof(NodePhysX)), showProps);
         }
         else
             Select(null);
     }
-    internal void Select(Node node)
+    internal void Select(Node node, bool showProps = false)
     {
         selected = node;
-        gameCtrlUI.SelectedNodeChanged(node);
+        gameCtrlUI.SelectedNodeChanged(node, showProps);
     }
 
     [SerializeField]
@@ -88,11 +86,13 @@ public class GraphController : MonoBehaviour {
             var link = destroyTarget.GetComponent<Link>();
             if (link.target == gameObject || link.source == gameObject)
             {
+                destroyTarget.name = "DELETED";
                 Destroy(destroyTarget);
                 LinkCount -= 1;
                 gameCtrlUI.PanelStatusLinkCountTxt.text = "Linkcount: " + LinkCount;
             }
         }
+        gameObject.name = "DELETED";
         Destroy(gameObject);
         NodeCount -= 1;
         gameCtrlUI.PanelStatusNodeCountTxt.text = "Nodecount: " + NodeCount;
@@ -102,6 +102,7 @@ public class GraphController : MonoBehaviour {
         {
             if (destroyTarget == gameObject.transform.Find("debugRepulseObj").gameObject)
             {
+                destroyTarget.name = "DELETED";
                 Destroy(destroyTarget);
             }
         }
@@ -124,6 +125,8 @@ public class GraphController : MonoBehaviour {
     private static int linkCount;
     private List<GameObject> debugObjects = new List<GameObject>();
     private bool playerPlaying;
+    private bool recording;
+    private float recordTime;
     private float playTime = 0;
     private float firstActionTime;
 
@@ -268,6 +271,16 @@ public class GraphController : MonoBehaviour {
         playerPlaying = false;
     }
 
+    internal void BeginRecord()
+    {
+        if (recording)
+            return;
+        recording = true;
+        recordTime = Time.time;
+        firstActionTime = Time.time - (GetPrevAction(timeline.currentPosition) ?? new TimelineAction()).time;
+        EmitPosition();
+    }
+
     public int LinkCount
     {
         get
@@ -307,6 +320,7 @@ public class GraphController : MonoBehaviour {
     {
         foreach (GameObject destroyTarget in GameObject.FindGameObjectsWithTag("link"))
         {
+            destroyTarget.name = "DELETED";
             Destroy(destroyTarget);
             LinkCount -= 1;
             gameCtrlUI.PanelStatusLinkCountTxt.text = "Linkcount: " + LinkCount;
@@ -314,6 +328,7 @@ public class GraphController : MonoBehaviour {
 
         foreach (GameObject destroyTarget in GameObject.FindGameObjectsWithTag("node"))
         {
+            destroyTarget.name = "DELETED";
             Destroy(destroyTarget);
             NodeCount -= 1;
             gameCtrlUI.PanelStatusNodeCountTxt.text = "Nodecount: " + NodeCount;
@@ -321,10 +336,13 @@ public class GraphController : MonoBehaviour {
 
         foreach (GameObject destroyTarget in GameObject.FindGameObjectsWithTag("debug"))
         {
+            destroyTarget.name = "DELETED";
             Destroy(destroyTarget);
         }
 
         debugObjects.Clear();
+        EmitPosition();
+        gameCtrlUI.SelectedNodeChanged(null, false);
     }
 
     private GameObject InstObj(Vector3 createPos)
@@ -378,16 +396,26 @@ public class GraphController : MonoBehaviour {
 
     internal float GetTimelineTime()
     {
-        if (timeline.actions.Count == 0)
-            return 0;
-        return timeline.actions.Last().time;
+        var tlTime = 0f;
+        if (timeline.actions.Count > 0)
+        {
+            tlTime = timeline.actions.Last().time;
+        }
+        if (recording)
+            tlTime += Time.time - recordTime;
+        return tlTime;
     }
 
     public bool RemoveLink(string id)
     {
         var link = GameObject.Find(id);
+       
         if (link != null)
         {
+            var lO = link.GetComponent<Link>();
+            lO.source = null;
+            lO.target = null;
+            link.name = "DELETED";
             Destroy(link);
             return true;
         }
@@ -411,7 +439,7 @@ public class GraphController : MonoBehaviour {
                 foreach (GameObject checkObj in GameObject.FindGameObjectsWithTag("link"))
                 {
                     Link checkLink = checkObj.GetComponent<Link>();
-                    if (checkLink.source == source && checkLink.target == target)
+                    if (checkObj != null && (checkLink.source == source && checkLink.target == target))
                     {
                         alreadyExists = true;
                         break;
@@ -496,6 +524,13 @@ public class GraphController : MonoBehaviour {
             LinkForceStrength = 5f;
             LinkIntendedLinkLength = 3f;
         }
+        EmitPosition();
+        Invoke("DelayedStart", 0);
+    }
+
+    public void DelayedStart()
+    {
+        gameCtrlUI.SelectedNodeChanged(null, false);
     }
     public void ReplayToPosition(int position)
     {
@@ -503,6 +538,7 @@ public class GraphController : MonoBehaviour {
         {
             ResetWorld();
             timeline.currentPosition = 0;
+            playTime = 0;
         }
         while( timeline.currentPosition < position)
         {
@@ -541,16 +577,15 @@ public class GraphController : MonoBehaviour {
         }
        
     }
+    public TimelineAction GetPrevAction(int position)
+    {
+        if (position == 0 || position > timeline.actions.Count )
+            return null;
+        return  timeline.actions[position-1];
+    }
     public void EmitPosition()
     {
-        if (playerPlaying)
-        {
-            if( PlayerPlaying != null) PlayerPlaying(this, playTime, timeline.currentPosition, timeline.actions.Count);
-        }
-        else
-        {
-            if (PlayerStop != null) PlayerStop(this, playTime, timeline.currentPosition, timeline.actions.Count);
-        }
+        if(PlayerPosition != null) PlayerPosition(this, playerPlaying && !recording, recording, playTime, timeline.currentPosition, timeline.actions.Count);
     }
     public void SetPosition(int position)
     {
@@ -570,6 +605,7 @@ public class GraphController : MonoBehaviour {
             timeline.actions.RemoveAt(position);
             //replay Whole Timeline
             ReplayToPosition(position);
+            EmitPosition();
             return "";
         }
         else
@@ -578,14 +614,21 @@ public class GraphController : MonoBehaviour {
             if (string.IsNullOrEmpty(ret))
             {
                 timeline.actions.RemoveAt(timeline.currentPosition);
+                EmitPosition();
             }
             return ret;
         }
 
 
     }
+    public bool IsRecording()
+    {
+        return recording;
+    }
     public string DoAction(TimelineAction action)
     {
+        if (!IsRecording())
+            return "";
         action.time = Time.time - firstActionTime;
         var ret = PerformAction(action, false);
         if (string.IsNullOrEmpty(ret))
@@ -594,6 +637,7 @@ public class GraphController : MonoBehaviour {
                 return ret;
             timeline.actions.Insert(timeline.currentPosition, action);
             timeline.currentPosition++;
+        
         }
         return ret;
     }
@@ -649,6 +693,15 @@ public class GraphController : MonoBehaviour {
     public void Stop()
     {
         playerPlaying = false;
+        if( recording)
+        {
+            //correct time of subsequent elements when recording parts
+            for (var i = timeline.currentPosition; i < timeline.actions.Count; i++)
+            {
+                timeline.actions[i].time += Time.time - recordTime;
+            }
+        }
+        recording = false;
         EmitPosition();
     }
     public string PerformAction(TimelineAction a, bool undo)
@@ -681,7 +734,8 @@ public class GraphController : MonoBehaviour {
                 action.nodeId = "node_" + NextId;
             if (!undo)
             {
-                GenerateNode(action.name, action.nodeId, action.type, action.position.ToVector3());
+                var n = GenerateNode(action.name, action.nodeId, action.type, action.position.ToVector3());
+                Select(n.GetComponent<NodePhysX>());
             }
             else
             {
@@ -694,11 +748,13 @@ public class GraphController : MonoBehaviour {
 
             if (!undo)
             {
+                gameCtrlUI.SelectedNodeChanged(SelectedNode, false);
                 if (MoveCamera != null)
                     MoveCamera(this, action.newPos.ToVector3(), action.newRot.ToVector3(), action.duration);
             }
             else
             {
+                gameCtrlUI.SelectedNodeChanged(SelectedNode, false);
                 if (MoveCamera != null)
                     MoveCamera(this, action.oldPos.ToVector3(), action.oldPos.ToVector3(), action.duration);
             }

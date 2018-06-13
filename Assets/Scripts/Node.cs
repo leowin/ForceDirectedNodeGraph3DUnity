@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
 
 public abstract class Node : MonoBehaviour
 {
@@ -10,6 +13,9 @@ public abstract class Node : MonoBehaviour
     private string id;
     private string text;
     private string type;
+
+    private InputField NodeTextInput;
+
 
     public string Id
     {
@@ -77,6 +83,7 @@ public abstract class Node : MonoBehaviour
     {
         graphControl = FindObjectOfType<GraphController>();
         gameCtrlUI = FindObjectOfType<GameCtrlUI>();
+        NodeTextInput = Resources.FindObjectsOfTypeAll<InputField>().FirstOrDefault(p => p.name == "Input_Text");
     }
 
     void FixedUpdate()
@@ -90,11 +97,24 @@ public abstract class Node : MonoBehaviour
 
     private void OnGUI()
     {
+        if (NodeTextInput!= null && NodeTextInput.isActiveAndEnabled && graphControl.SelectedNode == this)
+            return;
         var position = Camera.main.WorldToScreenPoint(gameObject.transform.position);
         GUIStyle labelStyle = new GUIStyle(GUI.skin.label);
-        labelStyle.fontSize = gameCtrlUI.labelFontSize;
-        var textSize = labelStyle.CalcSize(new GUIContent(Text));
-        GUI.color = graphControl.IsSelected(this) ? Color.yellow : Color.black;
-        GUI.Label(new Rect(position.x - textSize.x / 2.0f, Screen.height - position.y + textSize.y / 2.0f, textSize.x, textSize.y), Text, labelStyle);
+        GUI.depth = 100000;
+       
+        var heading = gameObject.transform.position - Camera.main.transform.position;
+        var distance = Vector3.Dot(heading, Camera.main.transform.forward);
+
+        //var distance = Vector3.Distance(Camera.main.transform.position, gameObject.transform.position);
+        if (distance > Camera.main.nearClipPlane + 20 && distance < 130)
+        {
+            labelStyle.fontSize = (int)(gameCtrlUI.labelFontSize * ( 1 -  distance / 300));
+            labelStyle.alignment = TextAnchor.UpperLeft;
+            var textSize = labelStyle.CalcSize(new GUIContent(Text));
+            GUI.color = graphControl.IsSelected(this) ? Color.red : new Color(0, 0, 0, 100 / distance / 2);
+            GUI.Label(new Rect(position.x - textSize.x / 2.0f, Screen.height - position.y + gameCtrlUI.labelFontSize/2, textSize.x, textSize.y), Text, labelStyle);
+        }
+        
     }
 }

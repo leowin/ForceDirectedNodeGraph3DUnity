@@ -355,9 +355,15 @@
   <ItemGroup>
     <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
     <None Include="Assets\BulletUnity\license.txt" />
+    <None Include="Assets\Data\ClappingInTime.xml" />
     <None Include="Assets\Data\Model.xml" />
+    <None Include="Assets\Data\audio1.xml" />
     <None Include="Assets\Data\layout.xml" />
     <None Include="Assets\Data\todos.txt" />
+    <None Include="Assets\Data\vortrag.xml" />
+    <None Include="Assets\Data\vortrag2.xml" />
+    <None Include="Assets\Data\vortrag3.xml" />
+    <None Include="Assets\Data\vortrag4.xml" />
     <None Include="Assets\Plugins\BulletUnity\Native\OSX\libbulletc.bundle\Contents\Resources\CMakeLists.txt" />
     <None Include="Assets\Plugins\crosstales\Common\README.txt" />
     <None Include="Assets\Plugins\crosstales\Common\UI\Colors.txt" />

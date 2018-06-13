@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameCtrlHID : MonoBehaviour {
 
@@ -17,8 +18,8 @@ public class GameCtrlHID : MonoBehaviour {
 
     public paintedLink paintedLinkPrefab;
     private paintedLink paintedLinkObject;
-
-    
+    private float lazyZ;
+    private InputField nodename;
 
     public void PaintModeController()
     {
@@ -26,9 +27,16 @@ public class GameCtrlHID : MonoBehaviour {
         {
             graphControl.UndoAction();
         }
-        if ( Input.GetKeyDown(KeyCode.F2))
+        if (Input.GetKeyDown(KeyCode.F2))
         {
-            if( graphControl.SelectedNode!=null)
+            if (graphControl.SelectedNode != null)
+            {
+                graphControl.Select(graphControl.SelectedNode, true);
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.F3))
+        {
+            if (graphControl.SelectedNode != null)
             {
                 //delete node
                 graphControl.DoAction(new DeleteNode() { nodeId = graphControl.SelectedNode.name });
@@ -38,7 +46,7 @@ public class GameCtrlHID : MonoBehaviour {
         {
             if (graphControl.SelectedNode != null)
             {
-                var worldpos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane + 28));
+                var worldpos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, lazyZ));
                 graphControl.DoDuplicateNode(graphControl.SelectedNode.name, worldpos);
             }
         }
@@ -53,7 +61,7 @@ public class GameCtrlHID : MonoBehaviour {
                 if (verbose)
                     Debug.Log(this.GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ": Detected MouseButtonDown. mousePosition: x: " + btnDownPointerPos.x + "   y: " + btnDownPointerPos.y + "  z: " + btnDownPointerPos.z);
 
-                if (graphControl.PaintMode)
+                if (graphControl.IsRecording())
                 {
                     //Ray ray = Camera.main.ScreenPointToRay(btnDownPointerPos);
                     //hitObjBtnDown = null;
@@ -79,12 +87,11 @@ public class GameCtrlHID : MonoBehaviour {
                 }
             }
             
-            if (Input.GetMouseButton(0) && paintedLinkObject != null && graphControl.PaintMode)
+            if (Input.GetMouseButton(0) && paintedLinkObject != null && graphControl.IsRecording())
             {
                 if (verbose)
                     Debug.Log(this.GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ": Entered GetMouseButton, about to start paintlink()");
 
-                float lazyZ = Camera.main.nearClipPlane + 28;
                 Vector3 mousePosWorld = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, lazyZ));
 
                 if (verbose)
@@ -110,16 +117,15 @@ public class GameCtrlHID : MonoBehaviour {
                     btnUpHitGo = gameCtrlHelper.ScreenPointToRaySingleHitWrapper(Camera.main, btnUpPointerPos);
 
                     string newNodeId = null;
-                    if(btnUpHitGo == null)
+                    if(btnUpHitGo == null && graphControl.IsRecording())
                     {
                         //create new node if release on empty space
-                        float lazyZ = Camera.main.nearClipPlane + 28;
                         Vector3 clickPosWorld = Camera.main.ScreenToWorldPoint(new Vector3(btnUpPointerPos.x, btnUpPointerPos.y, lazyZ));
 
                         newNodeId = "node_" + graphControl.NextId;
                         graphControl.DoAction(new CreateNode() { nodeId = newNodeId, position = SVector3.FromVector3(clickPosWorld) });
                         btnUpHitGo = GameObject.Find(newNodeId);
-                        graphControl.SelectById(newNodeId);
+                        graphControl.SelectById(newNodeId, true);
                     }
 
                     if (btnUpHitGo != null)
@@ -127,7 +133,7 @@ public class GameCtrlHID : MonoBehaviour {
                        // If on ButtonDown a node was rayhit, and on ButtonUp a different nodes, we just want to link these nodes together
                         if (btnDownHitGo != null )
                          {
-                            if (btnDownHitGo != btnUpHitGo)
+                            if (btnDownHitGo != btnUpHitGo && graphControl.IsRecording())
                             {
                                 if (verbose)
                                     Debug.Log(this.GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ": GetMouseButtonUp: ButtonDown node and a differing ButtonUp was selected. This linking the ButtonDown node: " + btnDownHitGo + " with the ButtonUp node: " + btnUpHitGo);
@@ -157,6 +163,7 @@ public class GameCtrlHID : MonoBehaviour {
         graphControl = GetComponent<GraphController>();
         gameCtrlUI = GetComponent<GameCtrlUI>();
         gameCtrlHelper = GetComponent<GameCtrlHelper>();
-
+        lazyZ = Camera.main.nearClipPlane + 56;
+        nodename = GameObject.Find("Input_Text").GetComponent<InputField>();
     }
 }

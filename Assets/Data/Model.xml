@@ -1,55 +1,18 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <Timeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <actions>
-    <node time="3.22122741" nodeId="node_1">
-      <position x="-22.541563" y="-0.796435952" z="28.2999973" />
+    <node time="1.14333582" nodeId="node_1">
+      <position x="-15.5184393" y="1.13431811" z="28.2999973" />
     </node>
-    <node time="4.13795567" nodeId="node_2">
-      <position x="-8.0609" y="5.623323" z="28.2999973" />
+    <node time="1.46341634" nodeId="node_2">
+      <position x="-8.036767" y="1.71354556" z="28.2999973" />
     </node>
-    <rename time="5.33042431" nodeId="node_2" name="asdfadsf" />
-    <node time="6.307857" nodeId="node_3">
-      <position x="4.10285568" y="2.87199855" z="28.2999973" />
+    <node time="1.77818322" nodeId="node_3">
+      <position x="-6.443894" y="-2.92026687" z="28.2999973" />
     </node>
-    <camera time="7.417942" duration="0.5465822">
-      <oldPos x="0" y="0" z="0" />
-      <newPos x="9.479509" y="0" z="0" />
-      <oldRot x="0" y="0" z="0" />
-      <newRot x="0" y="0" z="0" />
-    </camera>
-    <node time="8.56104" nodeId="node_4">
-      <position x="22.849987" y="7.602347" z="28.2999973" />
-    </node>
-    <rename time="9.985952" nodeId="node_4" name="asdfadsfadsf" />
-    <camera time="14.2998238" duration="2.76698875">
-      <oldPos x="9.479509" y="0" z="0" />
-      <newPos x="37.41348" y="0" z="0" />
-      <oldRot x="0" y="0" z="0" />
-      <newRot x="0" y="0" z="0" />
-    </camera>
-    <node time="17.48164" nodeId="node_5">
-      <position x="51.07359" y="6.926582" z="28.2999973" />
-    </node>
-    <rename time="18.6904869" nodeId="node_5" name="adsfadsf" />
-    <node time="20.08209" nodeId="node_6">
-      <position x="65.3128738" y="5.575053" z="28.2999973" />
-    </node>
-    <camera time="21.5237579" duration="4.98662">
-      <oldPos x="37.41348" y="0" z="0" />
-      <newPos x="37.41348" y="-17.1101" z="0" />
-      <oldRot x="0" y="0" z="0" />
-      <newRot x="0" y="0" z="0" />
-    </camera>
-    <camera time="26.5266876" duration="0.7785816">
-      <oldPos x="37.41348" y="-17.1445942" z="0" />
-      <newPos x="37.41348" y="1.97480774" z="0" />
-      <oldRot x="0" y="0" z="0" />
-      <newRot x="0" y="0" z="0" />
-    </camera>
-    <node time="30.4197578" nodeId="node_7">
-      <position x="66.27832" y="8.949654" z="28.2999973" />
-    </node>
-    <link time="33.4524841" SourceId="node_6" TargetId="node_7" LinkId="link_8" />
+    <link time="3.38514924" SourceId="node_1" TargetId="node_3" LinkId="link_4" />
+    <link time="4.84326935" SourceId="node_2" TargetId="node_3" LinkId="link_5" />
+    <link time="6.50021458" SourceId="node_1" TargetId="node_2" LinkId="link_6" />
   </actions>
-  <currentPosition>15</currentPosition>
+  <currentPosition>6</currentPosition>
 </Timeline>

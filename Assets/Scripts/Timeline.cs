@@ -19,7 +19,16 @@ namespace Assets.Scripts
         [XmlArrayItem("camera", typeof(MoveCamera))]
         public List<TimelineAction> actions = new List<TimelineAction>();
 
+        [XmlAttribute]
         public int currentPosition = 0;
+
+        [XmlAttribute]
+        public int lastId = 0;
+
+        public int NextId()
+        {
+            return ++lastId;
+        }
     }
 
     public class DeleteNode : TimelineAction
