@@ -56,6 +56,5 @@ public class NodePhysX : Node {
         sphRadius = graphControl.NodePhysXForceSphereRadius;
         sphRadiusSqr = sphRadius * sphRadius;
         GetComponent<Renderer>().material.color = graphControl.IsSelected(this) ? SelectedColor : Color.white;
-
     }
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<Timeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" currentPosition="6" lastId="2">
+  <actions>
+    <camera time="2.23650026" duration="4.98656845">
+      <oldPos x="0" y="0" z="0" />
+      <newPos x="0" y="-21.8721638" z="58.79514" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <camera time="7.24025869" duration="0">
+      <oldPos x="0" y="-21.8721638" z="58.79514" />
+      <newPos x="0" y="-21.8721638" z="58.82803" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <node time="8.598103" nodeId="node_1">
+      <position x="-25.88886" y="-31.1730537" z="115.128029" />
+    </node>
+    <rename time="9.251032" nodeId="node_1" name="sound" />
+    <node time="11.3060055" nodeId="node_2">
+      <position x="-24.067049" y="-18.0369835" z="115.128029" />
+    </node>
+    <rename time="12.0508" nodeId="node_2" name="clapping sound" />
+  </actions>
+</Timeline>

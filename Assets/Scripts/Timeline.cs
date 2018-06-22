@@ -125,9 +125,10 @@ namespace Assets.Scripts
             if (outputFile.Length != 0)
             {
                 var serializer = new XmlSerializer(typeof(Timeline));
-                var stream = new FileStream(outputFile, FileMode.Create);
-                serializer.Serialize(stream, t);
-                stream.Close();
+                using (StreamWriter sw = new StreamWriter(outputFile, false, Encoding.UTF8))
+                {
+                    serializer.Serialize(sw, t);
+                }
             }
         }
     }

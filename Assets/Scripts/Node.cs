@@ -97,7 +97,7 @@ public abstract class Node : MonoBehaviour
 
     private void OnGUI()
     {
-        if (NodeTextInput!= null && NodeTextInput.isActiveAndEnabled && graphControl.SelectedNode == this)
+        if (NodeTextInput!= null && NodeTextInput.isActiveAndEnabled && graphControl != null && graphControl.SelectedNode == this && graphControl.IsRecording())
             return;
         var position = Camera.main.WorldToScreenPoint(gameObject.transform.position);
         GUIStyle labelStyle = new GUIStyle(GUI.skin.label);

@@ -79,22 +79,20 @@ public class GameCtrlUI : MonoBehaviour {
             var position = Camera.main.WorldToScreenPoint(node.transform.position);
             position += new Vector3(0, labelFontSize*-2, position.z * -1);
             nodename.transform.position = position;
-            nodename.text = node.Text;
+        }
+        if (node != null && showProps && graphControl.IsRecording())
+        {
             nodename.enabled = true;
-            //nodename.gameObject.transform.localPosition = position;
-            if( showProps)
-                nodename.ActivateInputField();
-            else
-                nodename.DeactivateInputField();
             nodename.Select();
-            //nodename.gameObject.SetActive(showProps);
+            nodename.text = node.Text;
+            nodename.ActivateInputField();
         }
         else
         {
             nodename.DeactivateInputField();
             nodename.transform.position = new Vector3(-200, -200, -100); //invisible
             //nodename.gameObject.SetActive(false);
-            nodename.text = "";
+            
         }
 
     }
@@ -296,7 +294,46 @@ public class GameCtrlUI : MonoBehaviour {
             graphControl.DoAction(new RenameAction() { name = text, oldName = selected.Text, nodeId = selected.name });
         }
     }
+    public void Update()
+    {
+        //button controls:
+        if (Input.GetButtonUp("Play") && !graphControl.IsPlaying() && !graphControl.IsRecording())
+        {
+            OnPlayerPlay();
+        }
+        if (Input.GetButtonUp("Stop") && (graphControl.IsPlaying() || graphControl.IsRecording()))
+        {
+            OnPlayerStop();
+        }
+        if (Input.GetButtonUp("Load") && !graphControl.IsPlaying() && !graphControl.IsRecording())
+        {
+            graphControl.Load();
+        }
+        if (Input.GetButtonUp("Record") && !graphControl.IsPlaying() && !graphControl.IsRecording())
+        {
+            OnPlayerRecord();
+        }
+        if (Input.GetKeyUp(KeyCode.RightArrow) && !graphControl.IsRecording())
+        {
+            OnPlayerNext();
+        }
+        if (Input.GetKeyUp(KeyCode.LeftArrow) && !graphControl.IsRecording())
+        {
+            OnPlayerPrev();
+        }
+        if (Input.GetButtonUp("First") && !graphControl.IsRecording())
+        {
+            OnPlayerStart();
+        }
+        if (Input.GetButtonUp("Last") && !graphControl.IsRecording())
+        {
+            OnPlayerEnd();
+        }
 
+        if (Input.GetKey("escape"))
+            Application.Quit();
+
+    }
     public void OnGUI()
     {
         nodename.enabled = graphControl.SelectedNode != null;

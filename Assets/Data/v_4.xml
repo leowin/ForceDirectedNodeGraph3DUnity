@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<Timeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" currentPosition="29" lastId="9">
+  <actions>
+    <camera time="2.23650026" duration="4.98656845">
+      <oldPos x="0" y="0" z="0" />
+      <newPos x="0" y="-21.8721638" z="58.79514" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <camera time="7.24025869" duration="0">
+      <oldPos x="0" y="-21.8721638" z="58.79514" />
+      <newPos x="0" y="-21.8721638" z="58.82803" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <node time="8.598103" nodeId="node_1">
+      <position x="-25.88886" y="-31.1730537" z="115.128029" />
+    </node>
+    <rename time="9.251032" nodeId="node_1" name="sound" />
+    <node time="11.3060055" nodeId="node_2">
+      <position x="-24.067049" y="-18.0369835" z="115.128029" />
+    </node>
+    <rename time="12.0508" nodeId="node_2" name="clapping sound" />
+    <camera time="16.5402737" duration="3.860035">
+      <oldPos x="0" y="-21.8721638" z="58.82803" />
+      <newPos x="41.7133446" y="-21.8721638" z="29.117239" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <camera time="21.65994" duration="4.78770638">
+      <oldPos x="41.7133446" y="-21.8721638" z="29.117239" />
+      <newPos x="41.7133446" y="-5.30133724" z="61.1325378" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <camera time="26.8448544" duration="0.596431732">
+      <oldPos x="41.7133446" y="-5.30133724" z="61.1325378" />
+      <newPos x="41.7133446" y="-5.30133724" z="59.7903366" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <node time="30.5062027" nodeId="node_3">
+      <position x="61.17733" y="-2.23308635" z="116.090332" />
+    </node>
+    <rename time="31.1693535" nodeId="node_3" name="person" />
+    <node time="32.9250221" nodeId="node_4">
+      <position x="52.3560028" y="4.09528255" z="116.090332" />
+    </node>
+    <rename time="33.67102" nodeId="node_4" name="hand" />
+    <node time="34.86374" nodeId="node_5">
+      <position x="43.9182472" y="-5.97255" z="116.090332" />
+    </node>
+    <rename time="35.493084" nodeId="node_5" name="my hand" />
+    <camera time="38.37568" duration="4.9866333">
+      <oldPos x="41.7133446" y="-5.30133724" z="59.7903366" />
+      <newPos x="20.2164783" y="-5.30133724" z="23.542408" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <camera time="43.37883" duration="4.98654938">
+      <oldPos x="20.2164783" y="-5.30133724" z="23.542408" />
+      <newPos x="-92.9278" y="-5.30133724" z="51.320797" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <camera time="48.3985138" duration="2.40220642">
+      <oldPos x="-92.9278" y="-5.30133724" z="51.320797" />
+      <newPos x="-92.9278" y="-5.30133724" z="58.9199829" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <node time="55.0251846" nodeId="node_6">
+      <position x="-109.899353" y="1.60233879" z="115.219986" />
+    </node>
+    <rename time="55.72139" nodeId="node_6" name="feeling my hands" />
+    <node time="59.0011978" nodeId="node_7">
+      <position x="-102.4203" y="-8.753195" z="115.219986" />
+    </node>
+    <rename time="59.59771" nodeId="node_7" name="feeling my clapping" />
+    <camera time="61.58558" duration="4.98712158">
+      <oldPos x="-92.9278" y="-5.30133724" z="58.9199829" />
+      <newPos x="-29.9352818" y="-4.114166" z="14.4977007" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <camera time="66.58903" duration="4.98657227">
+      <oldPos x="-29.9352818" y="-4.114166" z="14.4977007" />
+      <newPos x="-29.9352818" y="32.62421" z="45.0003128" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <camera time="71.59217" duration="3.72758484">
+      <oldPos x="-29.9352818" y="32.62421" z="45.0003128" />
+      <newPos x="-29.9352818" y="32.62421" z="58.63306" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <node time="77.80529" nodeId="node_8">
+      <position x="-25.4285431" y="59.28041" z="114.93306" />
+    </node>
+    <rename time="78.48455" nodeId="node_8" name="move my hands" />
+    <node time="81.2174" nodeId="node_9">
+      <position x="-26.0996971" y="39.4320679" z="114.93306" />
+    </node>
+    <rename time="81.88035" nodeId="node_9" name="clap my hands" />
+  </actions>
+</Timeline>

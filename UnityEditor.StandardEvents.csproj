@@ -359,8 +359,17 @@
     <None Include="Assets\Data\Model.xml" />
     <None Include="Assets\Data\audio1.xml" />
     <None Include="Assets\Data\layout.xml" />
+    <None Include="Assets\Data\test.xml" />
     <None Include="Assets\Data\todos.txt" />
+    <None Include="Assets\Data\v_1.xml" />
+    <None Include="Assets\Data\v_2.xml" />
+    <None Include="Assets\Data\v_3.xml" />
+    <None Include="Assets\Data\v_4.xml" />
+    <None Include="Assets\Data\v_5.xml" />
+    <None Include="Assets\Data\v_6.xml" />
+    <None Include="Assets\Data\v_7.xml" />
     <None Include="Assets\Data\vortrag.xml" />
+    <None Include="Assets\Data\vortrag1.xml" />
     <None Include="Assets\Data\vortrag2.xml" />
     <None Include="Assets\Data\vortrag3.xml" />
     <None Include="Assets\Data\vortrag4.xml" />

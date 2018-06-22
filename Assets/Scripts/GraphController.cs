@@ -394,6 +394,11 @@ public class GraphController : MonoBehaviour {
         return nodeCreated.gameObject;
     }
 
+    internal bool IsPlaying()
+    {
+        return playerPlaying;
+    }
+
     internal float GetTimelineTime()
     {
         var tlTime = 0f;
@@ -618,7 +623,6 @@ public class GraphController : MonoBehaviour {
             }
             return ret;
         }
-
 
     }
     public bool IsRecording()

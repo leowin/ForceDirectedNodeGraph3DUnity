@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Timeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" currentPosition="86" lastId="60">
+  <actions>
+    <camera time="47.27524" duration="2.98656845">
+      <oldPos x="0" y="0" z="0" />
+      <newPos x="0" y="-21.8721638" z="58.79514" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="10" y="0" z="0" />
+    </camera>
+    <camera time="50.2790031" duration="2">
+      <oldPos x="0" y="-21.8721638" z="58.79514" />
+      <newPos x="0" y="-21.8721638" z="58.82803" />
+      <oldRot x="10" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <node time="53.6368446" nodeId="node_1">
+      <position x="-25.88886" y="-31.1730537" z="115.128029" />
+    </node>
+    <rename time="54.2897758" nodeId="node_1" name="sound" />
+    <node time="56.34475" nodeId="node_2">
+      <position x="-24.067049" y="-18.0369835" z="115.128029" />
+    </node>
+    <rename time="57.0895424" nodeId="node_2" name="clapping sound" />
+    <camera time="61.5790176" duration="3.860035">
+      <oldPos x="0" y="-21.8721638" z="58.82803" />
+      <newPos x="41.7133446" y="-21.8721638" z="29.117239" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="10" z="0" />
+    </camera>
+    <camera time="66.6986847" duration="4.78770638">
+      <oldPos x="41.7133446" y="-21.8721638" z="29.117239" />
+      <newPos x="41.7133446" y="-5.30133724" z="61.1325378" />
+      <oldRot x="0" y="10" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <camera time="71.8836" duration="0.596431732">
+      <oldPos x="41.7133446" y="-5.30133724" z="61.1325378" />
+      <newPos x="41.7133446" y="-5.30133724" z="59.7903366" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <node time="75.5449448" nodeId="node_3">
+      <position x="61.17733" y="-2.23308635" z="116.090332" />
+    </node>
+    <rename time="76.2081" nodeId="node_3" name="person" />
+    <node time="77.96377" nodeId="node_4">
+      <position x="52.3560028" y="4.09528255" z="116.090332" />
+    </node>
+    <rename time="78.70976" nodeId="node_4" name="hand" />
+    <node time="79.90248" nodeId="node_5">
+      <position x="43.9182472" y="-5.97255" z="116.090332" />
+    </node>
+    <rename time="80.53183" nodeId="node_5" name="my hand" />
+    <camera time="83.41442" duration="4.9866333">
+      <oldPos x="41.7133446" y="-5.30133724" z="59.7903366" />
+      <newPos x="20.2164783" y="-5.30133724" z="23.542408" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <camera time="88.41757" duration="4.98654938">
+      <oldPos x="20.2164783" y="-5.30133724" z="23.542408" />
+      <newPos x="-92.9278" y="-5.30133724" z="51.320797" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <camera time="93.4372559" duration="2.40220642">
+      <oldPos x="-92.9278" y="-5.30133724" z="51.320797" />
+      <newPos x="-92.9278" y="-5.30133724" z="58.9199829" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <node time="100.063927" nodeId="node_6">
+      <position x="-109.899353" y="1.60233879" z="115.219986" />
+    </node>
+    <rename time="100.760132" nodeId="node_6" name="feeling my hands" />
+    <node time="104.03994" nodeId="node_7">
+      <position x="-102.4203" y="-8.753195" z="115.219986" />
+    </node>
+    <rename time="104.636452" nodeId="node_7" name="feeling my clapping" />
+    <camera time="106.624321" duration="4.98712158">
+      <oldPos x="-92.9278" y="-5.30133724" z="58.9199829" />
+      <newPos x="-29.9352818" y="-4.114166" z="14.4977007" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <camera time="111.627769" duration="4.98657227">
+      <oldPos x="-29.9352818" y="-4.114166" z="14.4977007" />
+      <newPos x="-29.9352818" y="32.62421" z="45.0003128" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <camera time="116.630913" duration="3.72758484">
+      <oldPos x="-29.9352818" y="32.62421" z="45.0003128" />
+      <newPos x="-29.9352818" y="32.62421" z="58.63306" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <node time="122.844032" nodeId="node_8">
+      <position x="-25.4285431" y="59.28041" z="114.93306" />
+    </node>
+    <rename time="123.523293" nodeId="node_8" name="move my hands" />
+    <node time="126.256142" nodeId="node_9">
+      <position x="-26.0996971" y="39.4320679" z="114.93306" />
+    </node>
+    <rename time="126.91909" nodeId="node_9" name="clap my hands" />
+    <camera time="128.0127" duration="4.98599243">
+      <oldPos x="-29.9352818" y="32.62421" z="58.63306" />
+      <newPos x="-29.9352818" y="10.977" z="17.06144" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <camera time="133.0156" duration="1.39126587">
+      <oldPos x="-29.9352818" y="10.977" z="17.06144" />
+      <newPos x="-29.9352818" y="9.879874" z="25.94246" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <node time="140.2052" nodeId="node_10">
+      <position x="3.81596947" y="13.8111906" z="82.24246" />
+    </node>
+    <rename time="140.917557" nodeId="node_10" name="speaker?" />
+    <node time="146.3204" nodeId="node_11">
+      <position x="-2.60835838" y="5.85277843" z="82.24246" />
+    </node>
+    <rename time="147.0166" nodeId="node_11" name="Leo" />
+    <link time="152.549545" SourceId="node_11" TargetId="node_10" LinkId="link_12" />
+    <rename time="156.194122" nodeId="node_10" name="speaker" oldName="speaker?" />
+    <node time="163.930786" nodeId="node_13">
+      <position x="4.295336" y="5.661047" z="82.24246" />
+    </node>
+    <rename time="164.842377" nodeId="node_13" name="strange" />
+    <link time="169.003235" SourceId="node_11" TargetId="node_13" LinkId="link_14" />
+    <link time="171.439667" SourceId="node_10" TargetId="node_13" LinkId="link_15" />
+    <node time="183.947235" nodeId="node_16">
+      <position x="-61.9118" y="10.9842138" z="82.24246" />
+    </node>
+    <rename time="185.040344" nodeId="node_16" name="me clapping" />
+    <link time="191.552917" SourceId="node_7" TargetId="node_16" LinkId="link_17" />
+    <link time="195.66127" SourceId="node_9" TargetId="node_16" LinkId="link_18" />
+    <link time="200.185333" SourceId="node_2" TargetId="node_16" LinkId="link_19" />
+    <link time="206.8816" SourceId="node_5" TargetId="node_16" LinkId="link_20" />
+    <node time="219.637909" nodeId="node_21">
+      <position x="-7.080887" y="-1.11501694" z="82.24246" />
+    </node>
+    <rename time="220.748642" nodeId="node_21" name="Leo&#xA;clapping" />
+    <link time="226.13205" SourceId="node_2" TargetId="node_21" LinkId="link_22" />
+    <link time="233.506256" SourceId="node_4" TargetId="node_21" LinkId="link_23" />
+    <link time="235.714935" SourceId="node_11" TargetId="node_21" LinkId="link_24" />
+    <camera time="264.162476" duration="3.00152588">
+      <oldPos x="-29.9352818" y="9.879874" z="25.94246" />
+      <newPos x="-29.9352818" y="9.879874" z="21.44246" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <node time="294.65094" nodeId="node_25">
+      <position x="-41.3622627" y="12.5206633" z="77.74246" />
+    </node>
+    <rename time="296.373871" nodeId="node_25" name="clapping&#xA;differently" />
+    <link time="314.9343" SourceId="node_16" TargetId="node_25" LinkId="link_26" />
+    <link time="318.0526" SourceId="node_21" TargetId="node_25" LinkId="link_27" />
+    <node time="331.708618" nodeId="node_28">
+      <position x="-46.2596054" y="1.285572" z="77.74246" />
+    </node>
+    <rename time="332.471" nodeId="node_28" name="clapping&#xA;exact" />
+    <link time="338.792419" SourceId="node_16" TargetId="node_28" LinkId="link_29" />
+    <link time="343.0688" SourceId="node_28" TargetId="node_2" LinkId="link_30" />
+    <link time="346.366455" SourceId="node_21" TargetId="node_28" LinkId="link_31" />
+    <node time="369.810242" nodeId="node_32">
+      <position x="-16.97152" y="10.6961575" z="77.74246" />
+    </node>
+    <rename time="370.837646" nodeId="node_32" name="Leo clapping&#xA;earlier" />
+    <link time="384.962219" SourceId="node_21" TargetId="node_32" LinkId="link_33" />
+    <node time="392.7818" nodeId="node_34">
+      <position x="-14.18684" y="17.1299019" z="77.74246" />
+    </node>
+    <rename time="393.494324" nodeId="node_34" name="Leo clapping&#xA;later" />
+    <link time="400.72113" SourceId="node_21" TargetId="node_34" LinkId="link_36" />
+    <camera time="426.121" duration="4.98757935">
+      <oldPos x="-29.9352818" y="9.879874" z="21.44246" />
+      <newPos x="-29.9352818" y="12.054368" z="55.5463562" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <camera time="431.125153" duration="0.696167">
+      <oldPos x="-29.9352818" y="12.054368" z="55.5463562" />
+      <newPos x="-29.9352818" y="32.43975" z="55.5463562" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <node time="435.151154" nodeId="node_37">
+       <position x="-8.997973" y="38.2009048"  z="111.846359" />
+    </node>
+    <rename time="436.02887" nodeId="node_37" name="clap earlier" />
+    <node time="442.112823" nodeId="node_38">
+      <position x="-26.1899929" y="32.9678879" z="111.846359" />
+    </node>
+    <rename time="443.023651" nodeId="node_38" name="clap later" />
+    <camera time="450.910736" duration="4.987793">
+      <oldPos x="-29.9352818" y="32.43975" z="55.5463562" />
+      <newPos x="-29.9352818" y="20.8845959" z="18.0463562" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <camera time="455.915741" duration="4.87023926">
+      <oldPos x="-29.9352818" y="20.8845959" z="18.0463562" />
+      <newPos x="-29.9352818" y="-0.3878009" z="18.0463562" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <camera time="461.183563" duration="0.232391357">
+      <oldPos x="-29.9352818" y="-0.3878009" z="18.0463562" />
+      <newPos x="-29.9352818" y="1.70208061" z="18.0463562" />
+      <oldRot x="0" y="0" z="0" />
+      <newRot x="0" y="0" z="0" />
+    </camera>
+    <node time="505.138947" nodeId="node_39">
+      <position x="-38.19337" y="16.2500439" z="74.34636" />
+    </node>
+    <rename time="506.464478" nodeId="node_39" name="me clapping too early" />
+    <node time="519.9028" nodeId="node_40">
+      <position x="-35.21647" y="7.511667" z="74.34636" />
+    </node>
+    <rename time="520.6476" nodeId="node_40" name="me clapping too late" />
+	<link time="525.48175" SourceId="node_25" TargetId="node_40" LinkId="link_45" />
+	<link time="526.48175" SourceId="node_16" TargetId="node_40" LinkId="link_46" />
+	<link time="527.48175" SourceId="node_25" TargetId="node_39" LinkId="link_47" />
+	<link time="528.48175" SourceId="node_16" TargetId="node_39" LinkId="link_48" />
+
+    <link time="531.2492" SourceId="node_39" TargetId="node_38" LinkId="link_41" />
+    <link time="535.164856" SourceId="node_40" TargetId="node_37" LinkId="link_42" />
+    <link time="550.48175" SourceId="node_39" TargetId="node_34" LinkId="link_43" />
+    <link time="557.2792" SourceId="node_40" TargetId="node_32" LinkId="link_44" />
+  </actions>
+</Timeline>
