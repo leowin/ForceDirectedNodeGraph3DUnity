@@ -330,7 +330,7 @@ public class GameCtrlUI : MonoBehaviour {
             OnPlayerEnd();
         }
 
-        if (Input.GetKey("escape"))
+        if (Input.GetKeyUp("escape"))
             Application.Quit();
 
     }
